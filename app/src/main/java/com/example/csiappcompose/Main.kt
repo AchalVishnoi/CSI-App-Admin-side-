@@ -1,5 +1,7 @@
 package com.example.csiappcompose
 
+import HomePage
+import TaskPage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -24,9 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.csiappcompose.pages.ChatPage
-import com.example.csiappcompose.pages.HomePage
 import com.example.csiappcompose.pages.ProfilePage
-import com.example.csiappcompose.pages.TaskPage
 
 @Composable
 fun Main(modifier: Modifier = Modifier) {
@@ -41,9 +41,9 @@ fun Main(modifier: Modifier = Modifier) {
         mutableStateOf(0)
     }
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(top = 0.dp),
         topBar = {
-           TopBar()
+            TopBar()
         },
         bottomBar = {
             NavigationBar(
@@ -52,9 +52,7 @@ fun Main(modifier: Modifier = Modifier) {
                 navItemListitems.forEachIndexed { index, navItem ->
                     NavigationBarItem(
                         selected = selectedIndex == index,
-                        onClick = {
-                            selectedIndex = index
-                        },
+                        onClick = { selectedIndex = index },
                         icon = {
                             Icon(
                                 painter = painterResource(id = navItem.icon),
@@ -65,7 +63,7 @@ fun Main(modifier: Modifier = Modifier) {
                         label = {
                             Text(
                                 text = navItem.label,
-                                color =  Color.Black // Change text color
+                                color = Color.Black // Change text color
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -77,10 +75,11 @@ fun Main(modifier: Modifier = Modifier) {
                 }
             }
         }
-    )
-    {
-        innerPadding ->
-        ContentScreen(modifier = modifier.padding(innerPadding), selectedIndex)
+    ) { innerPadding ->
+        ContentScreen(
+            modifier = Modifier.padding(innerPadding),
+            selectedIndex
+        )
     }
 }
 
