@@ -90,7 +90,7 @@ fun Main(modifier: Modifier = Modifier) {
                                         .background(
                                             color = if (selectedIndex == index) Color.Blue else Color.Transparent // Background color when selected
                                         )
-                                        .padding(8.dp) // Padding inside the box
+                                        .padding(top = 8.dp) // Padding inside the box
 
                                 ) {
                                     Column(
