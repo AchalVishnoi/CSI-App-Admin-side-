@@ -12,12 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
 
 @Preview
 @Composable
 fun ChatPage(modifier: Modifier = Modifier) {
         LazyColumn (
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(PrimaryBackgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
