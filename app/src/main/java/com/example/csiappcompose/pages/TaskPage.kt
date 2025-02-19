@@ -17,22 +17,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.csiappcompose.PreviousTask
+import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
+import com.example.csiappcompose.ui.theme.Purple40
 
 @Composable
 fun TaskPage(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
+        modifier = modifier.background(color = PrimaryBackgroundColor)
             .fillMaxSize()
-            .background(Color.White),
+
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
                 Button(
                     onClick = { /*TODO*/ },
-                    modifier = Modifier
+                    modifier = Modifier.padding(top = 70.dp )
                         .padding(16.dp)
                         .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -47,13 +49,15 @@ fun TaskPage(modifier: Modifier = Modifier) {
             item { TaskSection("Current Tasks", sampleTasks()) }
             item { TaskSection("Pending Tasks", sampleTasks()) }
             item { TaskSection("Previous Tasks", sampleTasks()) }
+
+
         }
     }
 }
 
 @Composable
 fun TaskSection(title: String, tasks: List<PreviousTask>) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().background(color = PrimaryBackgroundColor)) {
         Row {
             Text(
                 text = title,
@@ -69,14 +73,17 @@ fun TaskSection(title: String, tasks: List<PreviousTask>) {
             )
         }
         LazyRow(
-            modifier = Modifier
+            modifier = Modifier.background(color = Color.Transparent)
                 .fillMaxWidth()
-                .background(Color.White)
+
         ) {
             items(tasks) { item ->
                 TaskItem(item)
             }
         }
+
+
+        if(title.equals("Previous Tasks")) Spacer(Modifier.height(110.dp))
     }
 }
 
@@ -87,11 +94,12 @@ fun TaskItem(task: PreviousTask) {
             .padding(8.dp)
             .width(150.dp)
             .height(150.dp)
-            .border(2.dp, Color.Blue, shape = RoundedCornerShape(16.dp)), // Border with rounded corners
+            .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
+            , // Border with rounded corners
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
-                .background(Color.White),
+            modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
+                ,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -105,7 +113,7 @@ fun TaskItem(task: PreviousTask) {
                     .height(6.dp)
                     .padding(8.dp,0.dp,8.dp,0.dp),
                 color = Color.Blue,
-                trackColor = Color.LightGray
+
             )
 
             // Progress Text
