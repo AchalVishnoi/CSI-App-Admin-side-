@@ -36,10 +36,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.csiappcompose.pages.ChatPage
 import com.example.csiappcompose.pages.ProfilePage
+import com.example.csiappcompose.viewModels.AuthViewModel
+import com.example.csiappcompose.viewModels.ChatViewModel
 
 @Composable
 
-fun Main(modifier: Modifier = Modifier,navController: NavController, authViewModel: AuthViewModel, ) {
+fun Main(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel, chatViewModel: ChatViewModel) {
 
     val navItemListitems = listOf(
         NavItem("Home", R.drawable.home_icon),
@@ -66,7 +68,7 @@ fun Main(modifier: Modifier = Modifier,navController: NavController, authViewMod
                         ambientColor = Color.Black.copy(alpha = 0.3f), // Darker shadow color (ambient)
                         spotColor = Color.Black.copy(alpha = 0.5f) // Darker shadow for a more elevated effect (spot)
                     )
-                    .background(Color(0xF7F7F7), shape = RoundedCornerShape(14.dp)) // Apply white background with rounded corners
+                    .background(Color(0xFFF7F7F7), shape = RoundedCornerShape(14.dp)) // Apply white background with rounded corners
             )
             {
                 NavigationBar(
@@ -126,10 +128,7 @@ fun Main(modifier: Modifier = Modifier,navController: NavController, authViewMod
             }
         }
     ) { innerPadding ->
-        ContentScreen(
-            modifier = Modifier.fillMaxSize(),
-            selectedIndex
-        )
+        ContentScreen(modifier = Modifier.fillMaxSize(),selectedIndex=selectedIndex,chatViewModel=chatViewModel)
     }
 }
 
@@ -160,11 +159,11 @@ fun TopBar() {
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier,selectedIndex: Int) {
+fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel) {
     when(selectedIndex){
         0 -> HomePage(modifier)
         1 -> TaskPage(modifier)
         2 -> ProfilePage( )
-        3 -> ChatPage(modifier)
+        3 -> ChatPage(modifier, chatViewModel = chatViewModel)
     }
 }
