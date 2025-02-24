@@ -1,3 +1,4 @@
+
 package com.example.csiappcompose.viewModels
 
 import android.content.Context
@@ -19,8 +20,8 @@ import kotlinx.coroutines.launch
 class ChatViewModel(private val context: Context) : ViewModel() {
 
 
-  private val _token= MutableStateFlow<String?>(null)
-  val token : StateFlow<String?> = _token
+    private val _token= MutableStateFlow<String?>(null)
+    val token : StateFlow<String?> = _token
 
 //    private val _groupList= MutableStateFlow<List<GroupListItem>>(emptyList())
 //    val groupList : StateFlow<List<GroupListItem>> = _groupList

@@ -93,40 +93,40 @@ fun addedGroups(viewModel: ChatViewModel){
 
 
 
-   Box(modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor).padding(top = 70.dp, start = 10.dp, end=10.dp)){
+    Box(modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor).padding(top = 70.dp, start = 10.dp, end=10.dp)){
 
 
 
-       when (val result = result.value) {
-           is NetWorkResponse.Error -> {
-               Box(
-                   modifier = Modifier.fillMaxSize(),
-                   contentAlignment = Alignment.Center
-               ) {
-                   Text(text = result.message, color = Color.Red)
-               }
-           }
-           is NetWorkResponse.Loading -> {
-               Box(
-                   modifier = Modifier.fillMaxSize(),
-                   contentAlignment = Alignment.Center
-               ) {
-                   CircularProgressIndicator()
-               }
-           }
-           is NetWorkResponse.Success -> {
-               val groupList = result.data
-               Column {
-                   row1()
-                   groupsListSection(groupList)
-               }
-           }
-           else -> {}
-       }
+        when (val result = result.value) {
+            is NetWorkResponse.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = result.message, color = Color.Red)
+                }
+            }
+            is NetWorkResponse.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is NetWorkResponse.Success -> {
+                val groupList = result.data
+                Column {
+                    row1()
+                    groupsListSection(groupList)
+                }
+            }
+            else -> {}
+        }
 
 
 
-   }
+    }
 
 }
 
@@ -146,14 +146,14 @@ fun row1(){
                     painter = painterResource(id = R.drawable.search),
                     contentDescription = "Search Icon",
 
-                )
+                    )
             }
             IconButton(onClick = { }) {
                 Icon(modifier = Modifier.wrapContentSize().fillMaxSize(0.6f),
                     painter = painterResource(id = R.drawable.meatballs_menu),
                     contentDescription = "Menu",
 
-                )
+                    )
             }
         }
     }
@@ -170,15 +170,15 @@ fun groupsListSection(groupList: List<GroupListItem>) {
             .clip(RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
 
-    ) {
-    LazyColumn(
-        modifier = Modifier
-            .background(color = Color(0xFFF7F7F7))
-            .fillMaxWidth().wrapContentHeight()
-    ) {
-        items(groupList) { item ->
-            groupListItem(onClick = {},item)
-        }
+        ) {
+        LazyColumn(
+            modifier = Modifier
+                .background(color = Color(0xFFF7F7F7))
+                .fillMaxWidth().wrapContentHeight()
+        ) {
+            items(groupList) { item ->
+                groupListItem(onClick = {},item)
+            }
 
 //        if (listState.canScrollForward) {
 //            item {
@@ -190,15 +190,15 @@ fun groupsListSection(groupList: List<GroupListItem>) {
 //            Spacer(modifier = Modifier.height(bottomPadding))
 //        }
 
-        if (isScrollable) {
-            item {
-                Spacer(modifier = Modifier.height(110.dp))
+            if (isScrollable) {
+                item {
+                    Spacer(modifier = Modifier.height(110.dp))
+                }
             }
+
+
         }
-
-
     }
-}
 
 }
 
@@ -284,5 +284,4 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
 
     }
 
- }
-
+}
