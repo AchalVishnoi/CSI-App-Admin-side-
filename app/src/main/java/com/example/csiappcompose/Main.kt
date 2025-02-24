@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -33,16 +31,15 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.csiappcompose.pages.ChatPage
 import com.example.csiappcompose.pages.ProfilePage
 
 @Composable
 
-@Preview
-fun Main(modifier: Modifier = Modifier) {
+fun Main(modifier: Modifier = Modifier,navController: NavController, authViewModel: AuthViewModel, ) {
 
     val navItemListitems = listOf(
         NavItem("Home", R.drawable.home_icon),
@@ -90,7 +87,7 @@ fun Main(modifier: Modifier = Modifier) {
                                         .background(
                                             color = if (selectedIndex == index) Color.Blue else Color.Transparent // Background color when selected
                                         )
-                                        .padding(top = 8.dp) // Padding inside the box
+                                        .padding(8.dp) // Padding inside the box
 
                                 ) {
                                     Column(
@@ -167,7 +164,7 @@ fun ContentScreen(modifier: Modifier,selectedIndex: Int) {
     when(selectedIndex){
         0 -> HomePage(modifier)
         1 -> TaskPage(modifier)
-        2 -> ProfilePage(modifier)
+        2 -> ProfilePage( )
         3 -> ChatPage(modifier)
     }
 }

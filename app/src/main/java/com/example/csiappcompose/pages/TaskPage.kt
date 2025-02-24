@@ -1,5 +1,7 @@
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -12,16 +14,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.csiappcompose.PreviousTask
+import com.example.csiappcompose.TaskDetailsActivity
+import com.example.csiappcompose.pages.CreateTaskPage
 import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
-import com.example.csiappcompose.ui.theme.Purple40
 
 @Composable
 fun TaskPage(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Box(
         modifier = modifier.background(color = PrimaryBackgroundColor)
             .fillMaxSize()
@@ -33,7 +38,12 @@ fun TaskPage(modifier: Modifier = Modifier) {
         ) {
             item {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        context.let { ctx -> // ✅ Ensuring context isn't null
+                        val intent = Intent(ctx, CreateTaskPage()::class.java).apply {
+                        }
+                        ctx.startActivity(intent) // ✅ Starting activity with context
+                    }},
                     modifier = Modifier.padding(top = 70.dp )
                         .padding(16.dp)
                         .fillMaxWidth(),
@@ -42,12 +52,12 @@ fun TaskPage(modifier: Modifier = Modifier) {
                         contentColor = Color.White   // Change text/icon color
                     )
                 ) {
-                    Text(text = "Create Task")
+                    Text(text = "+ Create Task")
                 }
             }
 
             item { TaskSection("Current Tasks", sampleTasks()) }
-            item { TaskSection("Pending Tasks", sampleTasks()) }
+            item { TaskSection("Pending Tasks", sampleTasks() )}
             item { TaskSection("Previous Tasks", sampleTasks()) }
 
 
@@ -89,13 +99,23 @@ fun TaskSection(title: String, tasks: List<PreviousTask>) {
 
 @Composable
 fun TaskItem(task: PreviousTask) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .padding(8.dp)
             .width(150.dp)
             .height(150.dp)
             .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
-            , // Border with rounded corners
+            .clickable {
+                context.let { ctx -> // ✅ Ensuring context isn't null
+                    val intent = Intent(ctx, TaskDetailsActivity::class.java).apply {
+                        putExtra("data", task.data)
+                        putExtra("name", task.name)
+                        putExtra("progress", task.progress)
+                    }
+                    ctx.startActivity(intent) // ✅ Starting activity with context
+                }
+            },// Border with rounded corners
     ) {
         Column(
             modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
@@ -136,5 +156,5 @@ fun sampleTasks() = listOf(
 @Preview
 @Composable
 fun PreviewHomePage() {
-    TaskPage()
+    TaskPage(modifier = Modifier)
 }
