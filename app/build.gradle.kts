@@ -56,4 +56,27 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // Retrofit core
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Gson converter for JSON parsing
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2") // Logging interceptor (optional)
+
+    val lifecycle_version = "2.8.7"
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+
+
+
+    val nav_version = "2.8.7"
+
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+
+
+    //to add image
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
 }

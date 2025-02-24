@@ -59,7 +59,9 @@ fun TaskPage(modifier: Modifier = Modifier) {
             item { TaskSection("Current Tasks", sampleTasks()) }
             item { TaskSection("Pending Tasks", sampleTasks() )}
             item { TaskSection("Previous Tasks", sampleTasks()) }
-
+            item {
+                Spacer(Modifier.height(110.dp))
+            }
 
         }
     }
@@ -93,7 +95,7 @@ fun TaskSection(title: String, tasks: List<PreviousTask>) {
         }
 
 
-        if(title.equals("Previous Tasks")) Spacer(Modifier.height(110.dp))
+        //(title.equals("Previous Tasks")) Spacer(Modifier.height(110.dp))
     }
 }
 
