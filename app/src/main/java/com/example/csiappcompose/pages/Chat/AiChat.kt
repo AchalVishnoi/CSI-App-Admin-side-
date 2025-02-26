@@ -69,7 +69,7 @@ fun AiChat(chatViewModel: AiChatViewModel) {
             .fillMaxSize()
             .background(color = PrimaryBackgroundColor)
     ) {
-        header()
+        header("GemCSI")
 
         MessageList(modifier = Modifier.weight(1f), messages = chatViewModel.messageList)
 
@@ -199,7 +199,7 @@ if(!message.toString().isEmpty()) {
 
 
 @Composable
-fun header(){
+fun header(roomName:String){
 
 
 
@@ -257,7 +257,7 @@ fun header(){
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "GemCSI", fontSize = 20.sp)
+                    Text(text = "$roomName", fontSize = 20.sp)
 
                 }
 

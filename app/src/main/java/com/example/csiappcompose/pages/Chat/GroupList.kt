@@ -1,5 +1,6 @@
 package com.example.csiappcompose.pages.Chat
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 
 
 import com.example.csiappcompose.dataModelsResponse.GroupListItem
@@ -67,15 +69,16 @@ import com.example.csiappcompose.viewModels.ChatViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
 import kotlinx.coroutines.flow.collect
 import coil.compose.AsyncImage
+import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
-
-
-
+import java.util.*
 
 
 @Composable
-fun addedGroups(viewModel: ChatViewModel){
+fun addedGroups(viewModel: ChatViewModel,navController: NavHostController){
 
     val context= LocalContext.current
 
@@ -85,6 +88,8 @@ fun addedGroups(viewModel: ChatViewModel){
 //    val groupList by chatViewModel.groupList.collectAsState()
 
     val result= viewModel.groupChatResult.observeAsState()
+    val tokenState = viewModel.token.collectAsState(initial = "")
+    val token = tokenState.value
 
     LaunchedEffect(Unit) {
         viewModel.fetchToken()
@@ -121,7 +126,7 @@ fun addedGroups(viewModel: ChatViewModel){
                val groupList = result.data
                Column {
                    row1()
-                   groupsListSection(groupList)
+                   groupsListSection(groupList = groupList, navController = navController, token = token)
                }
            }
            else -> {}
@@ -168,9 +173,10 @@ fun row1(){
 }
 
 @Composable
-fun groupsListSection(groupList: List<GroupListItem>) {
+fun groupsListSection(navController: NavHostController, token: String?, groupList: List<GroupListItem>) {
     val listState = rememberLazyListState()
     var isScrollable by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +192,7 @@ fun groupsListSection(groupList: List<GroupListItem>) {
             .wrapContentHeight()
     ) {
         items(groupList) { item ->
-            groupListItem(onClick = {},item)
+            groupListItem(groupListItem = item, token = token, navController = navController)
         }
 
 //        if (listState.canScrollForward) {
@@ -213,14 +219,28 @@ fun groupsListSection(groupList: List<GroupListItem>) {
 
 
 @Composable
-fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
+fun groupListItem(navController: NavHostController, groupListItem: GroupListItem,token:String?) {
+
+
+    //time formater
+
+    val createdAt=if(groupListItem.last_message!=null) formatTime(groupListItem.last_message.created_at)
+                         else "   "
+    val lastMessage= if(groupListItem.last_message!=null) groupListItem.last_message.content
+                            else "you were added in this group"
+
+
+
+
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .background(color = Color(0xFFF7F7F7))
-            .clickable { onClick() }
+            .clickable {
+                navController.navigate("chat/${groupListItem.id}/${token}/${groupListItem.name}")
+            }
 
     ) {
         Row(
@@ -278,13 +298,13 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "${groupListItem.name}", fontSize = 18.sp)
-                    Text(text = "06:25 pm", fontSize = 13.sp, color = Color(0xFF6F6F6F))
+                    Text(text = "$createdAt", fontSize = 13.sp, color = Color(0xFF6F6F6F))
                 }
 
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
-                    text = "Hello!! My name is Achal Vishnoi. And how are you?",
+                    text = "${lastMessage}",
                     fontSize = 13.sp,
                     color = Color(0xFF6F6F6F),
                     maxLines = 1,
@@ -309,3 +329,24 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
 
  }
 
+
+
+
+
+@SuppressLint("SimpleDateFormat")
+fun formatTime(createdAt: String): String {
+    return try {
+
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
+        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+
+        val date = inputFormat.parse(createdAt)
+
+
+        val outputFormat = SimpleDateFormat("hh:mm a")
+        outputFormat.format(date ?: Date())
+    } catch (e: Exception) {
+        "Invalid Time"
+    }
+}

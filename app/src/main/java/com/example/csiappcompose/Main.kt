@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.csiappcompose.pages.ChatPage
 import com.example.csiappcompose.pages.ProfilePage
 import com.example.csiappcompose.viewModels.AuthViewModel
@@ -41,7 +42,7 @@ import com.example.csiappcompose.viewModels.ChatViewModel
 
 @Composable
 
-fun Main(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel, chatViewModel: ChatViewModel) {
+fun Main(modifier: Modifier = Modifier, navController: NavHostController, authViewModel: AuthViewModel, chatViewModel: ChatViewModel) {
 
     val navItemListitems = listOf(
         NavItem("Home", R.drawable.home_icon),
@@ -128,7 +129,7 @@ fun Main(modifier: Modifier = Modifier, navController: NavController, authViewMo
             }
         }
     ) { innerPadding ->
-        ContentScreen(modifier = Modifier.fillMaxSize(),selectedIndex=selectedIndex,chatViewModel=chatViewModel)
+        ContentScreen(modifier = Modifier.fillMaxSize(),selectedIndex=selectedIndex,chatViewModel=chatViewModel, navController = navController)
     }
 }
 
@@ -159,11 +160,11 @@ fun TopBar() {
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel) {
+fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel,navController: NavHostController) {
     when(selectedIndex){
         0 -> HomePage(modifier)
         1 -> TaskPage(modifier)
         2 -> ProfilePage( )
-        3 -> ChatPage(modifier, chatViewModel = chatViewModel)
+        3 -> ChatPage(modifier, chatViewModel = chatViewModel, navController = navController )
     }
 }
