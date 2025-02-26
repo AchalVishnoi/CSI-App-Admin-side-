@@ -1,5 +1,6 @@
 package com.example.csiappcompose.pages.Chat
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,15 +60,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+
 import com.example.csiappcompose.dataModelsResponse.GroupListItem
 import com.example.csiappcompose.viewModels.ChatViewModel
 import com.example.csiappcompose.viewModels.ChatViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
 import kotlinx.coroutines.flow.collect
-import coil3.compose.AsyncImage
-import coil3.ImageLoader
+import coil.compose.AsyncImage
+
 
 
 
@@ -93,7 +93,10 @@ fun addedGroups(viewModel: ChatViewModel){
 
 
 
-   Box(modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor).padding(top = 70.dp, start = 10.dp, end=10.dp)){
+   Box(modifier = Modifier
+       .fillMaxSize()
+       .background(color = PrimaryBackgroundColor)
+       .padding(top = 70.dp, start = 10.dp, end = 10.dp)){
 
 
 
@@ -132,7 +135,10 @@ fun addedGroups(viewModel: ChatViewModel){
 
 @Composable
 fun row1(){
-    Row(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(horizontal = 10.dp),
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+        .padding(horizontal = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Text( fontSize= 24.sp, text = "Chats")
@@ -149,7 +155,9 @@ fun row1(){
                 )
             }
             IconButton(onClick = { }) {
-                Icon(modifier = Modifier.wrapContentSize().fillMaxSize(0.6f),
+                Icon(modifier = Modifier
+                    .wrapContentSize()
+                    .fillMaxSize(0.6f),
                     painter = painterResource(id = R.drawable.meatballs_menu),
                     contentDescription = "Menu",
 
@@ -174,7 +182,8 @@ fun groupsListSection(groupList: List<GroupListItem>) {
     LazyColumn(
         modifier = Modifier
             .background(color = Color(0xFFF7F7F7))
-            .fillMaxWidth().wrapContentHeight()
+            .fillMaxWidth()
+            .wrapContentHeight()
     ) {
         items(groupList) { item ->
             groupListItem(onClick = {},item)
@@ -210,11 +219,14 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(color = Color(0xFFF7F7F7)).clickable{onClick()}
+            .background(color = Color(0xFFF7F7F7))
+            .clickable { onClick() }
 
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight()
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .padding(vertical = 10.dp, horizontal = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -226,14 +238,25 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
             ) {
                 CompositionLocalProvider(LocalInspectionMode provides false) {
                     if (groupListItem.room_avatar != null) {
+                        val imgUrl = groupListItem.room_avatar?.let {
+                            if (it.toString().startsWith("http://")) {
+                                it.toString().replace("http://", "https://")
+                            } else it
+                        } ?: ""
+
+                        Log.d("ROOM_AVATAR", "Final Image URL: $imgUrl")
+
                         AsyncImage(
-                            model = groupListItem.room_avatar,
-                            contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(CircleShape),
+                            model = imgUrl,
+                            contentDescription = null,
                             contentScale = ContentScale.Crop
                         )
+
+
+                        Log.d("ROOM_AVATAR", "groupListItem: ${groupListItem.room_avatar}")
                     } else {
                         Image(
                             painter = painterResource(id = R.drawable.profile_icon), // Replace with your drawable

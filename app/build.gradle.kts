@@ -78,5 +78,12 @@ dependencies {
 
 
     //to add image
-    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+//    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.4.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
 }

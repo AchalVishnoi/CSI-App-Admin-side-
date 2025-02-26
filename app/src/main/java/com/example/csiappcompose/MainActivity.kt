@@ -13,14 +13,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-import coil3.util.DebugLogger
+import coil.util.DebugLogger
 import com.example.csiappcompose.pages.LoginPage
 import com.example.csiappcompose.pages.SplashScreen
 import com.example.csiappcompose.ui.theme.CSIAppComposeTheme
 
 import com.example.csiappcompose.viewModels.AuthViewModel
 import com.example.csiappcompose.viewModels.ChatViewModel
-import coil3.ImageLoader
+import coil.ImageLoader
+import com.example.csiappcompose.pages.Chat.AiChat
+import com.example.csiappcompose.viewModels.AiChatViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -39,13 +41,18 @@ class MainActivity : ComponentActivity() {
             ViewModelFactory(applicationContext)
         )[ChatViewModel::class.java]
 
+
+        val aiChatViewModel: AiChatViewModel = ViewModelProvider(this)[AiChatViewModel::class.java]
+
         setContent {
 
             val imageLoader = ImageLoader.Builder(this)
                 .build()
 
             CSIAppComposeTheme {
-                MyApp(chatViewModel)
+//                MyApp(chatViewModel)
+
+                AiChat(aiChatViewModel)
             }
         }
     }
