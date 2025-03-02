@@ -45,6 +45,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -53,6 +54,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 
@@ -69,6 +72,8 @@ import com.example.csiappcompose.viewModels.ChatViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
 import kotlinx.coroutines.flow.collect
 import coil.compose.AsyncImage
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -78,7 +83,7 @@ import java.util.*
 
 
 @Composable
-fun addedGroups(viewModel: ChatViewModel,navController: NavHostController){
+fun addedGroups(viewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>){
 
     val context= LocalContext.current
 
@@ -90,6 +95,8 @@ fun addedGroups(viewModel: ChatViewModel,navController: NavHostController){
     val result= viewModel.groupChatResult.observeAsState()
     val tokenState = viewModel.token.collectAsState(initial = "")
     val token = tokenState.value
+
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchToken()
@@ -126,11 +133,15 @@ fun addedGroups(viewModel: ChatViewModel,navController: NavHostController){
                val groupList = result.data
                Column {
                    row1()
-                   groupsListSection(groupList = groupList, navController = navController, token = token)
+                   groupsListSection(groupList = groupList, navController = navController, token = token, selected = selected)
                }
            }
            else -> {}
        }
+
+
+       //to display image
+
 
 
 
@@ -173,7 +184,8 @@ fun row1(){
 }
 
 @Composable
-fun groupsListSection(navController: NavHostController, token: String?, groupList: List<GroupListItem>) {
+fun groupsListSection(navController: NavHostController, token: String?, groupList: List<GroupListItem>,
+                      selected: MutableState<String?>) {
     val listState = rememberLazyListState()
     var isScrollable by remember { mutableStateOf(false) }
 
@@ -192,7 +204,7 @@ fun groupsListSection(navController: NavHostController, token: String?, groupLis
             .wrapContentHeight()
     ) {
         items(groupList) { item ->
-            groupListItem(groupListItem = item, token = token, navController = navController)
+            groupListItem(groupListItem = item, token = token, navController = navController, selected = selected)
         }
 
 //        if (listState.canScrollForward) {
@@ -219,15 +231,24 @@ fun groupsListSection(navController: NavHostController, token: String?, groupLis
 
 
 @Composable
-fun groupListItem(navController: NavHostController, groupListItem: GroupListItem,token:String?) {
+fun groupListItem(navController: NavHostController, groupListItem: GroupListItem,token:String?,
+                  selected: MutableState<String?>) {
+
 
 
     //time formater
 
-    val createdAt=if(groupListItem.last_message!=null) formatTime(groupListItem.last_message.created_at)
+    val createdAt=if(groupListItem.last_message!=null) formatTime(groupListItem.last_message.created_at.toString())
                          else "   "
     val lastMessage= if(groupListItem.last_message!=null) groupListItem.last_message.content
                             else "you were added in this group"
+
+
+
+    val encodedImageUrl = groupListItem.room_avatar?.toString()?.let {
+        URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
+    } ?: ""
+
 
 
 
@@ -239,7 +260,7 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
             .wrapContentHeight()
             .background(color = Color(0xFFF7F7F7))
             .clickable {
-                navController.navigate("chat/${groupListItem.id}/${token}/${groupListItem.name}")
+                navController.navigate("chat/${groupListItem.id}/${token}/${groupListItem.name}/${encodedImageUrl}")
             }
 
     ) {
@@ -266,20 +287,15 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
 
                         Log.d("ROOM_AVATAR", "Final Image URL: $imgUrl")
 
-                        AsyncImage(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape),
-                            model = imgUrl,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
+                       GroupProfileImage(imgUrl.toString()) {
+                        selected.value=imgUrl.toString()
+                       }
 
 
                         Log.d("ROOM_AVATAR", "groupListItem: ${groupListItem.room_avatar}")
                     } else {
                         Image(
-                            painter = painterResource(id = R.drawable.profile_icon), // Replace with your drawable
+                            painter = painterResource(id = R.drawable.profile_icon),
                             contentDescription = "Profile Image",
                             modifier = Modifier
                                 .fillMaxSize()
@@ -327,6 +343,9 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
 
     }
 
+
+
+
  }
 
 
@@ -350,3 +369,21 @@ fun formatTime(createdAt: String): String {
         "Invalid Time"
     }
 }
+
+
+
+
+
+@Composable
+fun GroupProfileImage(imageUrl: String, onClick: () -> Unit) {
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = "Group Profile Picture",
+        modifier = Modifier
+            .clip(CircleShape)
+            .clickable { onClick() },
+        contentScale = ContentScale.Crop
+    )
+}
+
+

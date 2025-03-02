@@ -59,6 +59,8 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.csiappcompose.ui.theme.primary
 import com.example.csiappcompose.viewModels.AiChatViewModel
 import com.example.csiappcompose.viewModels.AiMessageModel
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 
 @Composable
@@ -69,7 +71,7 @@ fun AiChat(chatViewModel: AiChatViewModel) {
             .fillMaxSize()
             .background(color = PrimaryBackgroundColor)
     ) {
-        header("GemCSI")
+//        header("GemCSI")
 
         MessageList(modifier = Modifier.weight(1f), messages = chatViewModel.messageList)
 
@@ -199,7 +201,7 @@ if(!message.toString().isEmpty()) {
 
 
 @Composable
-fun header(roomName:String){
+fun header(roomName:String,profilePic: String?,selected: MutableState<String?>){
 
 
 
@@ -240,14 +242,46 @@ fun header(roomName:String){
             ) {
 
 
+
+//if profile pic selected
+
+                CompositionLocalProvider(LocalInspectionMode provides false) {
+                    if (profilePic != null && profilePic.isNotEmpty()) {
+                        var decodedImageUrl = URLDecoder.decode(profilePic, StandardCharsets.UTF_8.toString())
+
+                        // Ensure it starts with HTTPS
+                        if (decodedImageUrl.startsWith("http://")) {
+                            decodedImageUrl = "https://" + decodedImageUrl.removePrefix("http://")
+                        }
+
+                        GroupProfileImage(decodedImageUrl) {
+                            selected.value = decodedImageUrl
+                        }
+
+                        Log.d("ROOM_AVATAR", "groupListItem: $decodedImageUrl")
+                    } else {
                         Image(
-                            painter = painterResource(id = R.drawable.gem_csi_logo), // Replace with your drawable
+                            painter = painterResource(id = R.drawable.profile_icon),
                             contentDescription = "Profile Image",
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(CircleShape),
                             contentScale = ContentScale.Crop
                         )
+                    }
+                }
+
+
+
+
+                /*   Image(
+                       painter = painterResource(id = R.drawable.gem_csi_logo), // Replace with your drawable
+                       contentDescription = "Profile Image",
+                       modifier = Modifier
+                           .fillMaxSize()
+                           .clip(CircleShape),
+                       contentScale = ContentScale.Crop
+                   )*/
 
                 }
 

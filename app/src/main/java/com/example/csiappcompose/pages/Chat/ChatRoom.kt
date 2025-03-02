@@ -1,7 +1,10 @@
 package com.example.csiappcompose.pages.Chat
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,8 +40,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -45,7 +53,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.csiappcompose.R
 import com.example.csiappcompose.dataModelsResponse.oldChatMessage
+import com.example.csiappcompose.displayInFullScreen
 import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
+import com.example.csiappcompose.ui.theme.lightWaterBlue
 import com.example.csiappcompose.ui.theme.primary
 import com.example.csiappcompose.viewModels.AiChatViewModel
 import com.example.csiappcompose.viewModels.AiMessageModel
@@ -54,56 +64,141 @@ import com.example.csiappcompose.viewModels.ChatRoomViewModelFactory
 import com.example.csiappcompose.viewModels.ChatViewModelFactory
 
 
-@Composable
-fun ChatRoomScreen(roomId: Int, token:String,RoomName:String) {
 
+@Composable
+fun ChatRoomScreen(roomId: Int, token: String, RoomName: String,profilePic:String?) {
+    val openDialog = remember { mutableStateOf(false) }
+    val isMessageSelected = remember { mutableStateOf(false) }
+    val selectedText = remember { mutableStateOf("Nothing") }
 
     val viewModel: ChatRoomViewModel = viewModel(factory = ChatRoomViewModelFactory(roomId, token))
-
     val messages by viewModel.messages.collectAsState(emptyList())
+
+      //for selected image
+
+    var selected = remember { mutableStateOf<String?>(null) }
+
+
+
+
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchOldMessages()
     }
-
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = PrimaryBackgroundColor)
     ) {
-        header(RoomName)
+        header(RoomName,profilePic,selected)
 
-        RoomMessageList(modifier = Modifier.weight(1f), messages = messages)
+
+        RoomMessageList(
+            modifier = Modifier.weight(1f),
+            messages = messages.asReversed(),
+            isMessageSelected = isMessageSelected
+        ){reaction,id->
+           viewModel.reactMeassage(reaction,id)
+
+        }
+
+        if (openDialog.value) {
+            popUpWindowAnimated(openDialog, selectedText)
+        }
 
         writeMessage { message ->
             viewModel.sendMessage(message)
         }
     }
-}
 
-@Composable
-fun RoomMessageList(modifier:Modifier,messages: List<oldChatMessage>) {
-    LazyColumn(modifier = modifier,
-        reverseLayout = true) {
-        items(messages.reversed().size) { index ->
-            RoomMessageRow(messages.reversed()[index])
+
+
+    selected?.value?.let{ image->
+        displayInFullScreen(image = image) {
+            selected.value = null
         }
-
 
     }
 }
 
-
 @Composable
-fun RoomMessageRow(it : oldChatMessage) {
-    val isModel = it.sender.id == 13
+fun RoomMessageList(
+    modifier: Modifier,
+    messages: List<oldChatMessage>,
+
+    isMessageSelected: MutableState<Boolean>,
+    reactMessage:(String, Int)-> Unit
+
+) {
+    LazyColumn(
+        modifier = modifier,
+        reverseLayout = true
+    ) {
+
+
+
+        items(messages.size) { index ->
+            RoomMessageRow(messages[index],isMessageSelected,reactMessage)
+        }
+    }
+}
+
+@SuppressLint("SuspiciousIndentation")
+@Composable
+fun RoomMessageRow(
+    it: oldChatMessage,
+    isMessageSelected: MutableState<Boolean>,
+    reactMessage:(String, Int)-> Unit
+
+) {
+
+
+    val openDialog = remember { mutableStateOf(false) }
+
+    val selectedText = remember { mutableStateOf("Nothing") }
+
+
+
+
+    val isModel = it.is_self
+    val isSelected = remember { mutableStateOf(false) }  // Track selection for each message
+    val popupAnchor = remember { mutableStateOf<Offset?>(null) }
+
+
+
+    if(selectedText.value!="Nothing"){
+
+        if(it.id!=null)
+        reactMessage(selectedText.value,it.id)
+
+
+    }
+
+
+
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = if (openDialog.value) lightWaterBlue else Color.Transparent)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = { offset ->
+                        openDialog.value = true
+                        isMessageSelected.value = true
+                        popupAnchor.value = offset
+
+
+                    }
+                )
+            },
         horizontalArrangement = if (!isModel) Arrangement.Start else Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
+
+
         Box(
             modifier = Modifier
                 .padding(
@@ -118,17 +213,91 @@ fun RoomMessageRow(it : oldChatMessage) {
                 )
                 .padding(12.dp)
         ) {
-            SelectionContainer(){
-                Text(
-                    text = it.content,
-                    color = if(!isModel) Color.Black else Color.White,
-                    fontWeight = FontWeight.W500
-                )
+            Column {
+                SelectionContainer {
+                    Text(
+                        text = it.content,
+                        color = if (!isModel) Color.Black else Color.White,
+                        fontWeight = FontWeight.W500
+                    )
+                }
+                if (!it.sendingStatus.isNullOrEmpty()) {
+                    Text(
+                        text = it.sendingStatus,
+                        color = if (!isModel) Color.Gray else Color.LightGray,
+                        fontWeight = FontWeight.W400,
+                        fontSize = 10.sp,
+                        modifier = Modifier.align(Alignment.End)
+                    )
+                }
+                if (it.reactions!=null) {
+
+                    var reaction=""
+
+
+                    var likeCnt = 0
+                    var coolCnt = 0
+                    var haHaCnt = 0
+                    var heartCnt = 0
+                    var angerCnt = 0
+                    var smileCnt = 0
+                    var sadCnt = 0
+
+                    it.reactions?.let { reaction ->
+                        likeCnt = reaction.Like ?: 0
+                        coolCnt = reaction.Cool ?: 0
+                        haHaCnt = reaction.HaHa ?: 0
+                        heartCnt = reaction.Heart ?: 0
+                        angerCnt = reaction.Anger ?: 0
+                        smileCnt = reaction.Smile ?: 0
+                        sadCnt = reaction.Sad ?: 0
+                    }
+
+                    if (likeCnt > 0) {
+                        reaction += "\uD83D\uDC4D:$likeCnt "
+                    }
+                    if (coolCnt > 0) {
+                        reaction += "\uD83D\uDE0E:$coolCnt "
+                    }
+                    if (haHaCnt > 0) {
+                        reaction += "\uD83D\uDE02:$haHaCnt "
+                    }
+                    if (heartCnt > 0) {
+                        reaction += "\u2764\uFE0F:$heartCnt "
+                    }
+                    if (angerCnt > 0) {
+                        reaction += "\uD83D\uDE21:$angerCnt "
+                    }
+                    if (smileCnt > 0) {
+                        reaction += "\uD83D\uDE42:$smileCnt "
+                    }
+                    if (sadCnt > 0) {
+                        reaction += "\uD83D\uDE22:$sadCnt "
+                    }
+
+
+                    Text(
+                        text = reaction,
+                        color = if (!isModel) Color.Gray else Color.LightGray,
+                        fontWeight = FontWeight.W400,
+                        fontSize = 10.sp,
+                        modifier = Modifier.align(Alignment.End)
+                    )
+                }
+
+
+            }
+
+
+
+            if(openDialog.value){
+                popUpWindowAnimated(isPopUpOpen = openDialog, selected = selectedText)
             }
 
         }
     }
 }
+
 
 
 

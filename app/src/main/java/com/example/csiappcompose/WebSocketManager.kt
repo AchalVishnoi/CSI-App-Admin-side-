@@ -85,6 +85,24 @@ class WebSocketManager(private val roomId: Int, private val token: String) {
         }
     }
 
+
+    fun react(reaction: String, message_id: Int){
+        if (_isConnected.value) {
+            val jsonMessage = """
+                {
+                    "action" : "react_message",
+                    "message_id" : $message_id,
+                    "reaction" : "$reaction"
+                }
+            """.trimIndent()
+
+            webSocket?.send(jsonMessage)
+            Log.i("SEND BY YOU IN ID $roomId ", "reactMessage: $reaction id: $message_id")
+        } else {
+            Log.e("WebSocket", "Cannot send message. WebSocket is not connected.")
+        }
+    }
+
     fun disconnect() {
         webSocket?.close(1000, "User left room")
     }

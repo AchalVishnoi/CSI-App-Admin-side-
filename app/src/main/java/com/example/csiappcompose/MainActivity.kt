@@ -84,18 +84,20 @@ fun MyApp(chatViewModel: ChatViewModel) {
         composable("home") { Main(navController=navController, authViewModel = authViewModel, chatViewModel=chatViewModel) }
 
         composable(
-            route = "chat/{roomId}/{token}/{roomName}",
+            route = "chat/{roomId}/{token}/{roomName}/{profilePic}",
             arguments = listOf(
                 navArgument("roomId") { type = NavType.IntType },
                 navArgument("token") { type = NavType.StringType },
-                navArgument("roomName") { type = NavType.StringType } // Add this argument
+                navArgument("roomName") { type = NavType.StringType },// Add this argument
+                navArgument("profilePic") { type = NavType.StringType } // Add this argument
             )
         ) { backStackEntry ->
             val roomId = backStackEntry.arguments?.getInt("roomId") ?: 0
             val token = backStackEntry.arguments?.getString("token") ?: ""
             val roomName = backStackEntry.arguments?.getString("roomName") ?: ""
+            val profilePic = backStackEntry.arguments?.getString("profilePic") ?: ""
 
-            ChatRoomScreen(roomId = roomId, token = token, RoomName = roomName)
+            ChatRoomScreen(roomId = roomId, token = token, RoomName = roomName,profilePic=profilePic)
         }
 
     }

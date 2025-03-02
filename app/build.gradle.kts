@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.csiappcompose"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -86,4 +86,6 @@ dependencies {
     implementation("com.google.ai.client.generativeai:generativeai:0.4.0")
 
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+    implementation("com.airbnb.android:lottie-compose:6.2.0")
 }
