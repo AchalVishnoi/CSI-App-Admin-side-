@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -88,4 +90,12 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
     implementation("com.airbnb.android:lottie-compose:6.2.0")
+
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    implementation( "com.google.accompanist:accompanist-navigation-animation:0.31.1-alpha")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging:23.1.2")
 }

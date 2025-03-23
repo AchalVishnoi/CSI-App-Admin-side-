@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "794185633163",
+    "project_id": "csi-app-8fd02",
+    "storage_bucket": "csi-app-8fd02.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794185633163:android:f2a24b7e06c536f38b738e",
+        "android_client_info": {
+          "package_name": "com.example.csiappcompose"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcLn6U6SK0Cf8wpmYsFF9EaqAekkYfSbY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

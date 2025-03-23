@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -47,19 +47,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAbsoluteAlignment
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -72,11 +79,13 @@ import com.example.csiappcompose.viewModels.ChatViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
 import kotlinx.coroutines.flow.collect
 import coil.compose.AsyncImage
+import org.intellij.lang.annotations.JdkConstants
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 
 
 import java.util.*
@@ -212,10 +221,12 @@ fun groupsListSection(navController: NavHostController, token: String?, groupLis
 //                Spacer(modifier = Modifier.height(110.dp))
 //            }
 //        }
-//        item {
-//            val bottomPadding = if (listState.canScrollForward) 110.dp else 0.dp
-//            Spacer(modifier = Modifier.height(bottomPadding))
-//        }
+       item {
+            //val bottomPadding = if (listState.canScrollForward) 110.dp else 0.dp
+            Spacer(modifier = Modifier
+                .height(110.dp)
+                .background(color = PrimaryBackgroundColor))
+        }
 
         if (isScrollable) {
             item {
@@ -253,15 +264,19 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
 
 
 
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .background(color = Color(0xFFF7F7F7))
             .clickable {
-                navController.navigate("chat/${groupListItem.id}/${token}/${groupListItem.name}/${encodedImageUrl}")
-            }
+
+                Log.i("Unread Count", " ${groupListItem.name} Unread Count : ${groupListItem.unread_count} ")
+
+                navController.navigate("chat/${groupListItem.id}/${token}/${groupListItem.name}/${encodedImageUrl}/${groupListItem.unread_count}/")
+            },
+
+
 
     ) {
         Row(
@@ -287,7 +302,7 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
 
                         Log.d("ROOM_AVATAR", "Final Image URL: $imgUrl")
 
-                       GroupProfileImage(imgUrl.toString()) {
+                       ProfileImage(imgUrl.toString()) {
                         selected.value=imgUrl.toString()
                        }
 
@@ -313,19 +328,76 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "${groupListItem.name}", fontSize = 18.sp)
-                    Text(text = "$createdAt", fontSize = 13.sp, color = Color(0xFF6F6F6F))
+                    Text(
+                        text = groupListItem.name,
+                        fontSize = 18.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(2f)
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = createdAt,
+                        fontSize = 13.sp,
+                        color = Color(0xFF6F6F6F),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                Text(
-                    text = "${lastMessage}",
-                    fontSize = 13.sp,
-                    color = Color(0xFF6F6F6F),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+
+                           Text(
+                               text = "${lastMessage}",
+                               fontSize = 13.sp,
+                               color = Color(0xFF6F6F6F),
+                               maxLines = 1,
+                               modifier = Modifier.weight(2f),
+
+                               overflow = TextOverflow.Ellipsis
+                           )
+
+                        if (groupListItem.unread_count != 0) {
+
+
+
+                                Card(
+                                    modifier = Modifier
+                                        .wrapContentSize()
+                                        .weight(0.5f)
+                                        .size(24.dp),
+                                    shape = CircleShape,
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color(
+                                            0xFFFF3D00
+                                        )
+                                    ),
+
+                                    ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = groupListItem.unread_count.toString(),
+                                            fontSize = 12.sp,
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+
+
+
+                        }
+                    }
 
 
             }
@@ -375,7 +447,7 @@ fun formatTime(createdAt: String): String {
 
 
 @Composable
-fun GroupProfileImage(imageUrl: String, onClick: () -> Unit) {
+fun ProfileImage(imageUrl: String, onClick: () -> Unit) {
     AsyncImage(
         model = imageUrl,
         contentDescription = "Group Profile Picture",
