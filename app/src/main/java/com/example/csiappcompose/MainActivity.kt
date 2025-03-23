@@ -9,18 +9,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
-import coil3.util.DebugLogger
+import coil.util.DebugLogger
 import com.example.csiappcompose.pages.LoginPage
 import com.example.csiappcompose.pages.SplashScreen
 import com.example.csiappcompose.ui.theme.CSIAppComposeTheme
 
 import com.example.csiappcompose.viewModels.AuthViewModel
 import com.example.csiappcompose.viewModels.ChatViewModel
-import coil3.ImageLoader
+import coil.ImageLoader
+import com.example.csiappcompose.pages.Chat.AiChat
+import com.example.csiappcompose.pages.Chat.ChatRoomScreen
+import com.example.csiappcompose.viewModels.AiChatViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -39,13 +44,17 @@ class MainActivity : ComponentActivity() {
             ViewModelFactory(applicationContext)
         )[ChatViewModel::class.java]
 
+
+        val aiChatViewModel: AiChatViewModel = ViewModelProvider(this)[AiChatViewModel::class.java]
+
         setContent {
 
             val imageLoader = ImageLoader.Builder(this)
                 .build()
 
             CSIAppComposeTheme {
-                MyApp(chatViewModel)
+            MyApp(chatViewModel)
+
             }
         }
     }
@@ -73,6 +82,23 @@ fun MyApp(chatViewModel: ChatViewModel) {
         composable("splash") { SplashScreen(navController, authViewModel) }
         composable("login") { LoginPage(navController, authViewModel) }
         composable("home") { Main(navController=navController, authViewModel = authViewModel, chatViewModel=chatViewModel) }
+
+        composable(
+            route = "chat/{roomId}/{token}/{roomName}/{profilePic}",
+            arguments = listOf(
+                navArgument("roomId") { type = NavType.IntType },
+                navArgument("token") { type = NavType.StringType },
+                navArgument("roomName") { type = NavType.StringType },// Add this argument
+                navArgument("profilePic") { type = NavType.StringType } // Add this argument
+            )
+        ) { backStackEntry ->
+            val roomId = backStackEntry.arguments?.getInt("roomId") ?: 0
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            val roomName = backStackEntry.arguments?.getString("roomName") ?: ""
+            val profilePic = backStackEntry.arguments?.getString("profilePic") ?: ""
+
+            ChatRoomScreen(roomId = roomId, token = token, RoomName = roomName,profilePic=profilePic)
+        }
 
     }
 }

@@ -1,5 +1,7 @@
 package com.example.csiappcompose.pages.Chat
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +45,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -51,6 +54,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 
@@ -58,24 +63,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+
 import com.example.csiappcompose.dataModelsResponse.GroupListItem
 import com.example.csiappcompose.viewModels.ChatViewModel
 import com.example.csiappcompose.viewModels.ChatViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
 import kotlinx.coroutines.flow.collect
-import coil3.compose.AsyncImage
-import coil3.ImageLoader
+import coil.compose.AsyncImage
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
-
-
+import java.util.*
 
 
 @Composable
-fun addedGroups(viewModel: ChatViewModel){
+fun addedGroups(viewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>){
 
     val context= LocalContext.current
 
@@ -85,6 +93,10 @@ fun addedGroups(viewModel: ChatViewModel){
 //    val groupList by chatViewModel.groupList.collectAsState()
 
     val result= viewModel.groupChatResult.observeAsState()
+    val tokenState = viewModel.token.collectAsState(initial = "")
+    val token = tokenState.value
+
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchToken()
@@ -93,46 +105,56 @@ fun addedGroups(viewModel: ChatViewModel){
 
 
 
-    Box(modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor).padding(top = 70.dp, start = 10.dp, end=10.dp)){
+   Box(modifier = Modifier
+       .fillMaxSize()
+       .background(color = PrimaryBackgroundColor)
+       .padding(top = 70.dp, start = 10.dp, end = 10.dp)){
 
 
 
-        when (val result = result.value) {
-            is NetWorkResponse.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = result.message, color = Color.Red)
-                }
-            }
-            is NetWorkResponse.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            is NetWorkResponse.Success -> {
-                val groupList = result.data
-                Column {
-                    row1()
-                    groupsListSection(groupList)
-                }
-            }
-            else -> {}
-        }
+       when (val result = result.value) {
+           is NetWorkResponse.Error -> {
+               Box(
+                   modifier = Modifier.fillMaxSize(),
+                   contentAlignment = Alignment.Center
+               ) {
+                   Text(text = result.message, color = Color.Red)
+               }
+           }
+           is NetWorkResponse.Loading -> {
+               Box(
+                   modifier = Modifier.fillMaxSize(),
+                   contentAlignment = Alignment.Center
+               ) {
+                   CircularProgressIndicator()
+               }
+           }
+           is NetWorkResponse.Success -> {
+               val groupList = result.data
+               Column {
+                   row1()
+                   groupsListSection(groupList = groupList, navController = navController, token = token, selected = selected)
+               }
+           }
+           else -> {}
+       }
+
+
+       //to display image
 
 
 
-    }
+
+   }
 
 }
 
 @Composable
 fun row1(){
-    Row(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(horizontal = 10.dp),
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+        .padding(horizontal = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Text( fontSize= 24.sp, text = "Chats")
@@ -146,23 +168,27 @@ fun row1(){
                     painter = painterResource(id = R.drawable.search),
                     contentDescription = "Search Icon",
 
-                    )
+                )
             }
             IconButton(onClick = { }) {
-                Icon(modifier = Modifier.wrapContentSize().fillMaxSize(0.6f),
+                Icon(modifier = Modifier
+                    .wrapContentSize()
+                    .fillMaxSize(0.6f),
                     painter = painterResource(id = R.drawable.meatballs_menu),
                     contentDescription = "Menu",
 
-                    )
+                )
             }
         }
     }
 }
 
 @Composable
-fun groupsListSection(groupList: List<GroupListItem>) {
+fun groupsListSection(navController: NavHostController, token: String?, groupList: List<GroupListItem>,
+                      selected: MutableState<String?>) {
     val listState = rememberLazyListState()
     var isScrollable by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,15 +196,16 @@ fun groupsListSection(groupList: List<GroupListItem>) {
             .clip(RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
 
-        ) {
-        LazyColumn(
-            modifier = Modifier
-                .background(color = Color(0xFFF7F7F7))
-                .fillMaxWidth().wrapContentHeight()
-        ) {
-            items(groupList) { item ->
-                groupListItem(onClick = {},item)
-            }
+    ) {
+    LazyColumn(
+        modifier = Modifier
+            .background(color = Color(0xFFF7F7F7))
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        items(groupList) { item ->
+            groupListItem(groupListItem = item, token = token, navController = navController, selected = selected)
+        }
 
 //        if (listState.canScrollForward) {
 //            item {
@@ -190,31 +217,57 @@ fun groupsListSection(groupList: List<GroupListItem>) {
 //            Spacer(modifier = Modifier.height(bottomPadding))
 //        }
 
-            if (isScrollable) {
-                item {
-                    Spacer(modifier = Modifier.height(110.dp))
-                }
+        if (isScrollable) {
+            item {
+                Spacer(modifier = Modifier.height(110.dp))
             }
-
-
         }
+
+
     }
+}
 
 }
 
 
 @Composable
-fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
+fun groupListItem(navController: NavHostController, groupListItem: GroupListItem,token:String?,
+                  selected: MutableState<String?>) {
+
+
+
+    //time formater
+
+    val createdAt=if(groupListItem.last_message!=null) formatTime(groupListItem.last_message.created_at.toString())
+                         else "   "
+    val lastMessage= if(groupListItem.last_message!=null) groupListItem.last_message.content
+                            else "you were added in this group"
+
+
+
+    val encodedImageUrl = groupListItem.room_avatar?.toString()?.let {
+        URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
+    } ?: ""
+
+
+
+
+
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(color = Color(0xFFF7F7F7)).clickable{onClick()}
+            .background(color = Color(0xFFF7F7F7))
+            .clickable {
+                navController.navigate("chat/${groupListItem.id}/${token}/${groupListItem.name}/${encodedImageUrl}")
+            }
 
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight()
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .padding(vertical = 10.dp, horizontal = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -226,17 +279,23 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
             ) {
                 CompositionLocalProvider(LocalInspectionMode provides false) {
                     if (groupListItem.room_avatar != null) {
-                        AsyncImage(
-                            model = groupListItem.room_avatar,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
+                        val imgUrl = groupListItem.room_avatar?.let {
+                            if (it.toString().startsWith("http://")) {
+                                it.toString().replace("http://", "https://")
+                            } else it
+                        } ?: ""
+
+                        Log.d("ROOM_AVATAR", "Final Image URL: $imgUrl")
+
+                       GroupProfileImage(imgUrl.toString()) {
+                        selected.value=imgUrl.toString()
+                       }
+
+
+                        Log.d("ROOM_AVATAR", "groupListItem: ${groupListItem.room_avatar}")
                     } else {
                         Image(
-                            painter = painterResource(id = R.drawable.profile_icon), // Replace with your drawable
+                            painter = painterResource(id = R.drawable.profile_icon),
                             contentDescription = "Profile Image",
                             modifier = Modifier
                                 .fillMaxSize()
@@ -255,13 +314,13 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "${groupListItem.name}", fontSize = 18.sp)
-                    Text(text = "06:25 pm", fontSize = 13.sp, color = Color(0xFF6F6F6F))
+                    Text(text = "$createdAt", fontSize = 13.sp, color = Color(0xFF6F6F6F))
                 }
 
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
-                    text = "Hello!! My name is Achal Vishnoi. And how are you?",
+                    text = "${lastMessage}",
                     fontSize = 13.sp,
                     color = Color(0xFF6F6F6F),
                     maxLines = 1,
@@ -284,4 +343,47 @@ fun groupListItem(onClick: () -> Unit, groupListItem: GroupListItem) {
 
     }
 
+
+
+
+ }
+
+
+
+
+
+@SuppressLint("SimpleDateFormat")
+fun formatTime(createdAt: String): String {
+    return try {
+
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
+        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+
+        val date = inputFormat.parse(createdAt)
+
+
+        val outputFormat = SimpleDateFormat("hh:mm a")
+        outputFormat.format(date ?: Date())
+    } catch (e: Exception) {
+        "Invalid Time"
+    }
 }
+
+
+
+
+
+@Composable
+fun GroupProfileImage(imageUrl: String, onClick: () -> Unit) {
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = "Group Profile Picture",
+        modifier = Modifier
+            .clip(CircleShape)
+            .clickable { onClick() },
+        contentScale = ContentScale.Crop
+    )
+}
+
+

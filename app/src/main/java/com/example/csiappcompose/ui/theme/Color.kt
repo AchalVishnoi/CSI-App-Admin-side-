@@ -12,3 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 val PrimaryBackgroundColor = Color(0xFFE9ECEF)
 val skyBlue = Color(0xFFAED2D7)
 val lightSkyBlue = Color(0xFFDBF3F6)
+val primary=Color(0xFF0032CD)
+
+
+val lightWaterBlue = Color(0xFFCFE2FF)

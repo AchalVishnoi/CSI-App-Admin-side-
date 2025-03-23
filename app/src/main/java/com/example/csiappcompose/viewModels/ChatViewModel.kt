@@ -40,6 +40,7 @@ class ChatViewModel(private val context: Context) : ViewModel() {
                 _token.value=savedToken
                 if (!savedToken.isNullOrEmpty()) {
                     getChatList(savedToken)
+
                 }
                 else{
                     _groupChatResult.value= NetWorkResponse.Error("failed to load data")

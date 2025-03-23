@@ -3,6 +3,7 @@ package com.example.csiappcompose
 import HomePage
 import TaskPage
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,11 +31,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+
 import com.example.csiappcompose.pages.ChatPage
 import com.example.csiappcompose.pages.ProfilePage
 import com.example.csiappcompose.viewModels.AuthViewModel
@@ -41,7 +49,7 @@ import com.example.csiappcompose.viewModels.ChatViewModel
 
 @Composable
 
-fun Main(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel, chatViewModel: ChatViewModel) {
+fun Main(modifier: Modifier = Modifier, navController: NavHostController, authViewModel: AuthViewModel, chatViewModel: ChatViewModel) {
 
     val navItemListitems = listOf(
         NavItem("Home", R.drawable.home_icon),
@@ -50,6 +58,13 @@ fun Main(modifier: Modifier = Modifier, navController: NavController, authViewMo
         NavItem("Chat", R.drawable.chat_icon),
     )
     var selectedIndex by remember { mutableStateOf(0) }
+
+    var selected = remember { mutableStateOf<String?>(null) }
+
+    //to drag selected img
+
+
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize().padding(top = 0.dp),
@@ -68,7 +83,7 @@ fun Main(modifier: Modifier = Modifier, navController: NavController, authViewMo
                         ambientColor = Color.Black.copy(alpha = 0.3f), // Darker shadow color (ambient)
                         spotColor = Color.Black.copy(alpha = 0.5f) // Darker shadow for a more elevated effect (spot)
                     )
-                    .background(Color(0xF7F7F7), shape = RoundedCornerShape(14.dp)) // Apply white background with rounded corners
+                    .background(Color(0xFFF7F7F7), shape = RoundedCornerShape(14.dp)) // Apply white background with rounded corners
             )
             {
                 NavigationBar(
@@ -128,10 +143,20 @@ fun Main(modifier: Modifier = Modifier, navController: NavController, authViewMo
             }
         }
     ) { innerPadding ->
-        ContentScreen(
-            modifier = Modifier.fillMaxSize(),
-            selectedIndex
-        )
+        ContentScreen(modifier = Modifier.fillMaxSize(),selectedIndex=selectedIndex,chatViewModel=chatViewModel, navController = navController,selected)
+
+
+
+
+    }
+
+
+//to show profile
+    selected?.value?.let{ image->
+        displayInFullScreen(image = image) {
+            selected.value = null
+        }
+
     }
 }
 
@@ -162,13 +187,50 @@ fun TopBar() {
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier,selectedIndex: Int) {
+fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>) {
     when(selectedIndex){
         0 -> HomePage(modifier)
         1 -> TaskPage(modifier)
         2 -> ProfilePage( )
-        3 -> ChatPage(modifier = Modifier, chatViewModel = ChatViewModel(
-            context = TODO()
-        ))
+        3 -> ChatPage(modifier, chatViewModel = chatViewModel, navController = navController,selected )
     }
+}
+
+
+
+
+
+
+
+@Composable
+fun displayInFullScreen(image:String, dismiss:()-> Unit){
+    var offsety by remember{mutableStateOf(0f)}
+
+    Box(modifier = Modifier.fillMaxSize()
+        .background(color = Color.Black).
+        pointerInput(Unit) {
+            detectVerticalDragGestures(
+                onDragEnd = {if(offsety<-250) dismiss()
+                else offsety=0f},
+                onVerticalDrag = {_,dragAmount->offsety+=dragAmount}
+            )
+        },
+        contentAlignment = Alignment.Center
+    )
+    {
+
+        AsyncImage(
+            model = image,
+            contentDescription = "full size image",
+            modifier = Modifier.fillMaxSize().graphicsLayer { translationY=offsety }
+
+            ,contentScale = ContentScale.Fit
+        )
+
+
+
+
+
+    }
+
 }
