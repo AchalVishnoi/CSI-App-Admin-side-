@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.csiappcompose.PreviousTask
 import com.example.csiappcompose.TaskDetailsActivity
-import com.example.csiappcompose.pages.CreateTaskActivity
 import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
 
 @Composable
@@ -39,11 +38,12 @@ fun TaskPage(modifier: Modifier = Modifier) {
             item {
                 Button(
                     onClick = {
-                        context.let { ctx -> // ✅ Ensuring context isn't null
-                            val intent = Intent(ctx, CreateTaskActivity()::class.java).apply {
-                            }
-                            ctx.startActivity(intent) // ✅ Starting activity with context
-                        }},
+//                        context.let { ctx -> // ✅ Ensuring context isn't null
+//                            val intent = Intent(ctx, CreateTaskActivity()::class.java).apply {
+//                            }
+//                            ctx.startActivity(intent) // ✅ Starting activity with context
+//                        }
+                        },
                     modifier = Modifier.padding(top = 70.dp )
                         .padding(16.dp)
                         .fillMaxWidth(),

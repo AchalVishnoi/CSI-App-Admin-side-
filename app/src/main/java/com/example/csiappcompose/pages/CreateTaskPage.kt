@@ -13,18 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 
-class CreateTaskActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val data = intent.getStringExtra("data") ?: "No data"
-        val name = intent.getStringExtra("name") ?: "No name"
-        val progress = intent.getIntExtra("progress", 0)
-
-        setContent {
-            CreateTaskPageFun()
-        }
-    }
-}
+//class CreateTaskActivity : AppCompatActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        val data = intent.getStringExtra("data") ?: "No data"
+//        val name = intent.getStringExtra("name") ?: "No name"
+//        val progress = intent.getIntExtra("progress", 0)
+//
+//        setContent {
+//            CreateTaskPageFun()
+//        }
+//    }
+//}
 
 @Composable
 fun CreateTaskPageFun(modifier: Modifier = Modifier) {
