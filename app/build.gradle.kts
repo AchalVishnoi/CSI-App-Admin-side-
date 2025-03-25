@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -10,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.csiappcompose"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -73,4 +75,27 @@ dependencies {
     val nav_version = "2.8.7"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+
+
+    //to add image
+//    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.4.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+    implementation("com.airbnb.android:lottie-compose:6.2.0")
+
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    implementation( "com.google.accompanist:accompanist-navigation-animation:0.31.1-alpha")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging:23.1.2")
 }

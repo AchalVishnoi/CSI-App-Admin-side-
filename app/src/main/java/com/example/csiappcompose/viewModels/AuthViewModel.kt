@@ -1,21 +1,15 @@
-package com.example.csiappcompose
+package com.example.csiappcompose.viewModels
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.csiappcompose.Backend.ApiService
-import com.example.csiappcompose.Backend.RetrofitInstance
 import com.example.csiappcompose.Backend.RetrofitInstance.apiService
+import com.example.csiappcompose.DataStoreManager
 import com.example.csiappcompose.dataModelsRequests.LoginRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
@@ -48,13 +42,15 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 val request = LoginRequest(email, password)
                 Log.d("API_REQUEST", "Request: $request")
 
-                val response = RetrofitInstance.apiService.login(request)
-                Log.d("API_RESPONSE", "Code: ${response.code()} Body: ${response.errorBody()?.string()}")
+                val response = apiService.login(request)
+                Log.d("API_RESPONSE", "Code: ${response.code()} Body: ${response.body()?.token}")
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     if (!token.isNullOrEmpty()) {
                         saveToken(token)
                         _loginResult.value = Result.success(token)
+
+
                     } else {
                         _loginResult.value = Result.failure(Exception("Invalid Token"))
                     }
@@ -80,11 +76,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun logoutUser(navController: NavController) {
         viewModelScope.launch {
-            DataStoreManager.clearToken(context) // Clear stored token
+            DataStoreManager.clearToken(context)
             _token.value = null
             _loginResult.value = null
             navController.navigate("login") {
-                popUpTo("home") { inclusive = true } // Clear backstack
+                popUpTo("home") { inclusive = true }
             }
         }
     }

@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">CSI App Compose</string>
+    <string name="default_channel_name">General Notifications</string>
+    <string name="default_channel_description">This channel is used for general app notifications.</string>
+
 </resources>
