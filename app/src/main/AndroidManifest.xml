@@ -39,6 +39,19 @@
             </intent-filter>
         </service>
 
+
+        <activity
+            android:name=".TaskDetailsActivity"
+
+            android:exported="false"
+            android:label="CSI Admin App"
+            android:theme="@style/Theme.CSIAppCompose"
+            android:windowSoftInputMode="adjustResize">
+
+        </activity>
+
+
+
     </application>
 
 </manifest>
