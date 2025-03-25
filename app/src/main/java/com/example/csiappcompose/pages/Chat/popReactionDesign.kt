@@ -43,11 +43,15 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import com.example.csiappcompose.R
+import kotlin.Int
 
 @Composable
 fun popUpWindowAnimated(
     isPopUpOpen: MutableState<Boolean> = mutableStateOf(true),
-    selected: MutableState<String> = mutableStateOf("Nothing")
+    selected: MutableState<String> = mutableStateOf("Nothing"),
+    id:Int?,
+    reactMessage:(String, Int)-> Unit,
+
 ) {
     val list =listOf("Like", "Cool","HaHa", "Heart", "Anger",  "Smile", "Sad")
 
@@ -78,7 +82,7 @@ fun popUpWindowAnimated(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 list.forEach { emoji ->
-                    emojiAnimation(emoji, emoji, isPopUpOpen, selected)
+                    emojiAnimation(emoji, emoji, isPopUpOpen, selected,id,reactMessage)
                     Spacer(modifier = Modifier.width(4.dp))
                 }
 
@@ -108,7 +112,9 @@ fun emojiAnimation(
     animation: String,
     label: String,
     isPopUpOpen: MutableState<Boolean> = mutableStateOf(true),
-    selected: MutableState<String> = mutableStateOf("Nothing")
+    selected: MutableState<String> = mutableStateOf("Nothing"),
+    id:Int?,
+    reactMessage:(String, Int)-> Unit,
 ) {
 
     var isPlaying = remember { mutableStateOf(true) }
@@ -143,7 +149,8 @@ fun emojiAnimation(
                 isPopUpOpen.value = false
 
                 Log.d("ClickEvent", "Emoji Clicked: ${selected.value}")
-
+              if(id!=null)
+                reactMessage(label,id)
                 isPlaying.value=false
             },
         contentAlignment = Alignment.Center

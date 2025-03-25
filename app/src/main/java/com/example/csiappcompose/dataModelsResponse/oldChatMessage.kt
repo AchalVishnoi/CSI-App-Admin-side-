@@ -18,5 +18,6 @@ data class oldChatMessage(
     val is_self: Boolean,
     val sendingStatus: String?,
     val new_content: String?,
-    val action: String?
+    val action: String?,
+    var is_typing: Boolean?
 )

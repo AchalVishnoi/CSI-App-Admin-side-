@@ -21,12 +21,12 @@ class ChatViewModelFactory(private val context: Context): ViewModelProvider.Fact
 
 
 
-class ChatRoomViewModelFactory(private val roomId: Int, private val token: String) :
+class ChatRoomViewModelFactory(private val roomId: Int, private val token: String,private val context: Context) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ChatRoomViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ChatRoomViewModel(roomId, token) as T
+            return ChatRoomViewModel(roomId, token,context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

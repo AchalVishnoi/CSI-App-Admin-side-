@@ -8,5 +8,6 @@ data class GroupListItem(
     val name: String,
     val room_avatar: Any,
     val updated_at: String,
-    val last_message: oldChatMessage
+    val last_message: oldChatMessage,
+    val unread_count:Int
 )

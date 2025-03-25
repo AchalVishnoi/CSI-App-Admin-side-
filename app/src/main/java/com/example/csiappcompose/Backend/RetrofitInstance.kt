@@ -11,10 +11,10 @@ object RetrofitInstance {
 
 
     private val client: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .build() // Ensure client is built
+        .connectTimeout(120, TimeUnit.SECONDS)
+        .readTimeout(120, TimeUnit.SECONDS)
+        .writeTimeout(120, TimeUnit.SECONDS)
+        .build()
 
     val apiService: ApiService by lazy {
         Retrofit.Builder()
