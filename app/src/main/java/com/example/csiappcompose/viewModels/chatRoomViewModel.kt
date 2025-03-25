@@ -1,6 +1,8 @@
 package com.example.csiappcompose.viewModels
 
 
+import android.R
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
@@ -17,6 +19,7 @@ import com.example.csiappcompose.dataModelsResponse.Status
 import com.example.csiappcompose.dataModelsResponse.chatMessages
 import com.example.csiappcompose.dataModelsResponse.oldChatMessage
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
+import com.example.csiappcompose.pages.Chat.playSound
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,9 +35,9 @@ import java.util.Date
 import java.util.Locale
 import retrofit2.HttpException
 
-class ChatRoomViewModel(private val roomId: Int, private val token: String) : ViewModel() {
+class ChatRoomViewModel(private val roomId: Int, private val token: String,private val context: Context) : ViewModel() {
 
-    private val webSocketManager = WebSocketManager(roomId, token)
+    private val webSocketManager = WebSocketManager(roomId, token,context)
 
     private val _typingUsers = MutableStateFlow<Set<Sender>>(emptySet())
 
@@ -184,7 +187,7 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String) : Vi
         }
     }
 
-    fun sendMessage(message: String, mentionList:List<Int>) {
+    fun sendMessage(message: String, mentionList:List<Int>,context: Context,soundResId: Int) {
         val tempMessage = oldChatMessage(
             id = null,
             content = message,
@@ -217,6 +220,7 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String) : Vi
                 else -> NetWorkResponse.Success(listOf(tempMessage)) // First message case
             }
         }
+
 
 
         webSocketManager.sendMessage(message,mentionList)

@@ -1,9 +1,12 @@
 package com.example.csiappcompose
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.platform.LocalContext
 import com.example.csiappcompose.dataModelsResponse.Sender
 import com.example.csiappcompose.dataModelsResponse.chatMessages
+import com.example.csiappcompose.pages.Chat.playSound
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +16,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 
-class WebSocketManager(private val roomId: Int, private val token: String) {
+class WebSocketManager(private val roomId: Int, private val token: String,private val context: Context) {
 
     private val client = OkHttpClient()
     private var webSocket: WebSocket? = null
@@ -29,9 +32,14 @@ class WebSocketManager(private val roomId: Int, private val token: String) {
     val typingUsers = _typingUsers.asStateFlow()
 
 
+
+
+
     fun connect() {
         val wsUrl = "wss://csi-backend-wvn0.onrender.com/ws/chat/$roomId/?token=$token"
         val request = Request.Builder().url(wsUrl).build()
+
+
 
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
 
@@ -64,6 +72,10 @@ class WebSocketManager(private val roomId: Int, private val token: String) {
                           "sendMessage: ${messageObject.message}"
                       )
 
+                    if(!messageObject.is_self)
+                      playSound(context,R.raw.message_reccieved_sound2)
+                    else
+                        playSound(context,R.raw.message_sending_sound)
                       _messages.value = _messages.value + messageObject
 
                   }
@@ -167,5 +179,7 @@ class WebSocketManager(private val roomId: Int, private val token: String) {
     fun isSocketConnected(): Boolean {
         return _isConnected.value
     }
+
+
 
 }

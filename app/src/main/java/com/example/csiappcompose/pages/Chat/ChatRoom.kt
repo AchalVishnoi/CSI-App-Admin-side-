@@ -9,6 +9,7 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +63,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -98,9 +100,11 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
     val openDialog = remember { mutableStateOf(false) }
     val isMessageSelected = remember { mutableStateOf(false) }
     val selectedText = remember { mutableStateOf("Nothing") }
+    var LocalContext= LocalContext.current
 
-    val viewModel: ChatRoomViewModel = viewModel(factory = ChatRoomViewModelFactory(roomId, token))
+    val viewModel: ChatRoomViewModel = viewModel(factory = ChatRoomViewModelFactory(roomId, token,LocalContext))
     val messagesResponse by viewModel.messages.collectAsState(NetWorkResponse.Loading)
+
 
 
     Log.i("UNREAD COUNT", "ChatRoomScreen: Unread count $unreadCnt")
@@ -276,7 +280,7 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
 
             writeMessage(
                 onMessageSend = { message,mentionList ->
-                    viewModel.sendMessage(message,mentionList)
+                    viewModel.sendMessage(message,mentionList,LocalContext,R.raw.message_sending_sound)
                 },
                 viewModel,
                 modifier = Modifier.constrainAs(chatBoxRef) {
@@ -473,6 +477,15 @@ fun RoomMessageRow(
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(12.dp)
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures{ change,dragAmount->
+                            if(dragAmount>50) {
+
+                            }
+
+                        }
+                    }
+
             ) {
                 Column {
 
