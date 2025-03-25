@@ -1,5 +1,4 @@
 import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +25,7 @@ import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
 
 @Composable
 fun TaskPage(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Box(
         modifier = modifier.background(color = PrimaryBackgroundColor)
             .fillMaxSize()
@@ -37,7 +37,13 @@ fun TaskPage(modifier: Modifier = Modifier) {
         ) {
             item {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+//                        context.let { ctx -> // ✅ Ensuring context isn't null
+//                            val intent = Intent(ctx, CreateTaskActivity()::class.java).apply {
+//                            }
+//                            ctx.startActivity(intent) // ✅ Starting activity with context
+//                        }
+                        },
                     modifier = Modifier.padding(top = 70.dp )
                         .padding(16.dp)
                         .fillMaxWidth(),
@@ -46,16 +52,14 @@ fun TaskPage(modifier: Modifier = Modifier) {
                         contentColor = Color.White   // Change text/icon color
                     )
                 ) {
-                    Text(text = "Create Task")
+                    Text(text = "+ Create Task")
                 }
             }
 
             item { TaskSection("Current Tasks", sampleTasks()) }
             item { TaskSection("Pending Tasks", sampleTasks() )}
             item { TaskSection("Previous Tasks", sampleTasks()) }
-            item {
-                Spacer(Modifier.height(110.dp))
-            }
+
 
         }
     }
@@ -89,7 +93,7 @@ fun TaskSection(title: String, tasks: List<PreviousTask>) {
         }
 
 
-        //(title.equals("Previous Tasks")) Spacer(Modifier.height(110.dp))
+        if(title.equals("Previous Tasks")) Spacer(Modifier.height(110.dp))
     }
 }
 
@@ -115,7 +119,7 @@ fun TaskItem(task: PreviousTask) {
     ) {
         Column(
             modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
-                ,
+            ,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -130,7 +134,7 @@ fun TaskItem(task: PreviousTask) {
                     .padding(8.dp,0.dp,8.dp,0.dp),
                 color = Color.Blue,
 
-            )
+                )
 
             // Progress Text
             Text(

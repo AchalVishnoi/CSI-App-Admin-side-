@@ -27,8 +27,16 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".TaskDetailsActivity"
+            android:exported="true"
+            android:label="CSI Admin App"
+            android:theme="@style/Theme.CSIAppCompose"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <service
@@ -38,19 +46,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-
-        <activity
-            android:name=".TaskDetailsActivity"
-
-            android:exported="false"
-            android:label="CSI Admin App"
-            android:theme="@style/Theme.CSIAppCompose"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
-
-
 
     </application>
 
