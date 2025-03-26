@@ -102,11 +102,14 @@ dependencies {
 
     implementation("com.airbnb.android:lottie-compose:6.2.0")
 
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     implementation( "com.google.accompanist:accompanist-navigation-animation:0.31.1-alpha")
 
     implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-messaging:23.1.2")
+
+    implementation ("androidx.compose.material:material-icons-extended:1.6.0")
+
 }
