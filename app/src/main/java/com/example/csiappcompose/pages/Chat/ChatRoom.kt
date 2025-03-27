@@ -261,12 +261,6 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
 
             }
         }
-
-
-
-
-
-
             writeMessage(
                 onMessageSend = { message,mentionList ->
                     viewModel.sendMessage(message,mentionList,LocalContext,R.raw.message_sending_sound)

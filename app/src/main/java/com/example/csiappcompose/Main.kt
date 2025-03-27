@@ -66,12 +66,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-
-import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-
-import androidx.compose.animation.*
-import androidx.navigation.NavBackStackEntry
 
 
 @OptIn(ExperimentalAnimationApi::class)
