@@ -1,5 +1,7 @@
 package com.example.csiappcompose.pages
 
+
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,7 +52,15 @@ fun ProfilePage() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {  }) {
+        Button(onClick = {
+            context.let { ctx -> // ✅ Ensuring context isn't null
+                            val intent = Intent(ctx, CreateAnnouncement()::class.java).apply {
+                            }
+                          ctx.startActivity(intent)
+                        }
+        }
+        )
+            {
             Text("Logout")
         }
     }

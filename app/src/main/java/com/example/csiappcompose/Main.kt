@@ -66,8 +66,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-
-import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 import androidx.compose.animation.*
@@ -86,24 +84,16 @@ import com.example.csiappcompose.viewModels.HomePageViewModelFactory
 fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
 
 
-
-
-
-
-
     val navController = rememberAnimatedNavController()
 
     val authViewModel: AuthViewModel = viewModel()
     var selected = remember { mutableStateOf<String?>(null) }
 
-
+    // Get the current route
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-
+    // Define screens where bottom nav should be hidden
     val hideBottomNavRoutes = listOf("splash", "login", "chat/{roomId}/{token}/{roomName}/{profilePic}/{unreadCnt}/")
-
-
-
 
 
 
@@ -132,6 +122,10 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
 
 
 
+    //to drag selected img
+
+
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize().padding(top = 0.dp),
@@ -148,15 +142,15 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
                     .fillMaxWidth()
                     .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
                     .shadow(
-                        elevation = 24.dp,
+                        elevation = 24.dp, // Increased shadow elevation
                         shape = RoundedCornerShape(14.dp),
-                        ambientColor = Color.Black.copy(alpha = 0.3f),
-                        spotColor = Color.Black.copy(alpha = 0.5f)
+                        ambientColor = Color.Black.copy(alpha = 0.3f), // Darker shadow color (ambient)
+                        spotColor = Color.Black.copy(alpha = 0.5f) // Darker shadow for a more elevated effect (spot)
                     )
                     .background(
                         Color(0xFFF7F7F7),
                         shape = RoundedCornerShape(14.dp)
-                    )
+                    ) // Apply white background with rounded corners
             )
             {
                 NavigationBar(
@@ -188,23 +182,23 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
                                 Box(
                                     modifier = Modifier
                                         .size(60.dp)
-                                        .clip(RoundedCornerShape(12.dp))
+                                        .clip(RoundedCornerShape(12.dp)) // Rounded corners for the background
                                         .background(
                                             color = if (selectedIndex == index) Color.Blue else Color.Transparent // Background color when selected
                                         )
-                                        .padding(8.dp)
+                                        .padding(8.dp) // Padding inside the box
 
                                 ) {
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.Center,
-                                        modifier = Modifier.fillMaxSize()
+                                        modifier = Modifier.fillMaxSize() // Make the column take up the full size of the Box
                                     ) {
-
+                                        // Icon
                                         Icon(
                                             painter = painterResource(id = navItem.icon),
                                             contentDescription = null,
-                                            modifier = Modifier.size(22.dp),
+                                            modifier = Modifier.size(22.dp), // Icon size
                                             tint = if (selectedIndex == index) Color.White else Color.Black // Icon color
                                         )
 
@@ -240,7 +234,7 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
             startDestination = "splash",
             enterTransition = {
                 when {
-
+                    // Zoom In effect when navigating away from Splash
                     initialState.destination.route =="splash" -> fadeIn(animationSpec = tween(500))
 
 
@@ -260,16 +254,16 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
             },
             exitTransition = {
                 when {
-
+                    // Zoom Out effect when leaving Splash
                     targetState.destination.route == "splash" -> fadeOut(animationSpec = tween(500))
 
-
+                    // Slide Out to Left when moving to a higher index
                     selectedIndex > previousIndex -> slideOutHorizontally(
                         targetOffsetX = { -it },
                         animationSpec = tween(300)
                     )
 
-
+                    // Slide Out to Right when moving to a lower index
                     selectedIndex < previousIndex -> slideOutHorizontally(
                         targetOffsetX = { it },
                         animationSpec = tween(300)
@@ -287,8 +281,8 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
         ) {
             composable("splash") { SplashScreen(navController, authViewModel) }
             composable("login") { LoginPage(navController, authViewModel) }
-            composable("home") { HomePage(selected = selected) }
-            composable("home_page") { HomePage(selected = selected) }
+            composable("home") { HomePage() }
+            composable("home_page") { HomePage() }
             composable("task") { TaskPage() }
             composable("profile") { ProfilePage() }
             composable("chat_room") { ChatPage(chatViewModel = chatViewModel, navController = navController, selected = selected) }
@@ -347,7 +341,7 @@ fun TopBar() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
+        // Left Icon
         Icon(
             painter = painterResource(id = R.drawable.csi_logo), // Replace with actual icon resource
             contentDescription = "Left Icon",
@@ -366,7 +360,7 @@ fun TopBar() {
 @Composable
 fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>) {
     when(selectedIndex){
-        0 -> HomePage(modifier,selected = selected)
+        0 -> HomePage(modifier)
         1 -> TaskPage(modifier)
         2 -> ProfilePage( )
         3 -> ChatPage(modifier, chatViewModel = chatViewModel, navController = navController,selected )

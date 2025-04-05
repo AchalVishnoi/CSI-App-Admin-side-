@@ -28,4 +28,3 @@ fun ChatPage(modifier: Modifier = Modifier,chatViewModel: ChatViewModel,navContr
 
     addedGroups(navController = navController, viewModel = chatViewModel, selected = selected)
 }
-

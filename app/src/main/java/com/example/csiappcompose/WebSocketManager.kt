@@ -55,32 +55,32 @@ class WebSocketManager(private val roomId: Int, private val token: String,privat
 
                 try {
                     val messageObject = gson.fromJson(text, chatMessages::class.java)
-                if(messageObject.action=="typing") {
+                    if(messageObject.action=="typing") {
 
-                    if (messageObject.is_typing == true) {
-                        _typingUsers.value = _typingUsers.value + messageObject.sender
+                        if (messageObject.is_typing == true) {
+                            _typingUsers.value = _typingUsers.value + messageObject.sender
 
 
-                    } else {
-                        _typingUsers.value = _typingUsers.value - messageObject.sender
+                        } else {
+                            _typingUsers.value = _typingUsers.value - messageObject.sender
+                        }
                     }
-                }
 
-                  else{
+                    else{
 
 
-                      Log.i(
-                          "SEND BY ${messageObject.sender.name}",
-                          "sendMessage: ${messageObject.message}"
-                      )
+                        Log.i(
+                            "SEND BY ${messageObject.sender.name}",
+                            "sendMessage: ${messageObject.message}"
+                        )
 
-                    if(!messageObject.is_self)
-                      playSound(context,R.raw.message_reccieved_sound2)
-                    else
-                        playSound(context,R.raw.message_sending_sound)
-                      _messages.value = _messages.value + messageObject
+                        if(!messageObject.is_self)
+                            playSound(context,R.raw.message_reccieved_sound2)
+                        else
+                            playSound(context,R.raw.message_sending_sound)
+                        _messages.value = _messages.value + messageObject
 
-                  }
+                    }
 
 
 

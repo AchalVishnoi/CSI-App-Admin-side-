@@ -34,7 +34,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,7 +50,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -60,8 +58,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -70,8 +68,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.BackspaceCommand
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -79,20 +75,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.size.Dimension
 import com.example.csiappcompose.R
 import com.example.csiappcompose.dataModelsResponse.oldChatMessage
-import com.example.csiappcompose.dataModelsResponse.searchMemberItem
 import com.example.csiappcompose.displayInFullScreen
 import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
 import com.example.csiappcompose.ui.theme.lightWaterBlue
 import com.example.csiappcompose.ui.theme.primary
-import com.example.csiappcompose.viewModels.AiChatViewModel
-import com.example.csiappcompose.viewModels.AiMessageModel
 import com.example.csiappcompose.viewModels.ChatRoomViewModel
 import com.example.csiappcompose.viewModels.ChatRoomViewModelFactory
-import com.example.csiappcompose.viewModels.ChatViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
-import com.example.csiappcompose.viewModels.SearchMemberViewModel
-
-import androidx.constraintlayout.compose.*
 import androidx.navigation.NavController
 import com.example.csiappcompose.ui.theme.skyBlue
 import com.google.common.collect.Multimaps.index
@@ -278,12 +267,6 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
 
             }
         }
-
-
-
-
-
-
             writeMessage(
                 onMessageSend = { message,mentionList ->
                     viewModel.sendMessage(message,mentionList,LocalContext,R.raw.message_sending_sound)
