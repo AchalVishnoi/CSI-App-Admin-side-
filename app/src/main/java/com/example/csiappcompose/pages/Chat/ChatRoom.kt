@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,10 +25,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -80,6 +83,8 @@ import com.example.csiappcompose.viewModels.ChatRoomViewModel
 import com.example.csiappcompose.viewModels.ChatRoomViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
 import androidx.navigation.NavController
+import com.example.csiappcompose.ui.theme.skyBlue
+import com.google.common.collect.Multimaps.index
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -152,9 +157,10 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
     ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = skyBlue)
                 .padding(paddingValues)
         ) {
-            val (messagesList, chatBoxRef) = createRefs() // ✅ Define constraints
+            val (messagesList, chatBoxRef) = createRefs()
 
             RoomMessageList(
                 modifier = Modifier.constrainAs(messagesList) {
@@ -293,39 +299,25 @@ fun RoomMessageList(
     messages: List<oldChatMessage>,
     isMessageSelected: MutableState<Boolean>,
     viewModel: ChatRoomViewModel,
-
     unreadCount: MutableState<Int>,
     unreadMessageId: Int?,
     reactMessage: (String, Int) -> Unit,
 ) {
-    var previousSenderId: Int? = null
     val isFetching = viewModel.isFetching.collectAsState().value
-
-
-
     val lazyListState = rememberLazyListState()
-    var unreadIndex = unreadCount.value
-
-
 
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
         state = lazyListState
     ) {
-        items(messages.size) { index ->
-
-            if (unreadCount.value>0&&index==unreadCount.value) {
-                UnreadMessagesTag()
-            }
+        items(messages)
+        { currentMessage ->
 
 
-            val currentMessage = messages[index]
-            val showProfile = previousSenderId == null || previousSenderId != currentMessage.sender.id
+           // val showProfile = index == messages.lastIndex || messages[index + 1].sender.id != currentMessage.sender.id
 
-            RoomMessageRow(currentMessage, isMessageSelected, reactMessage, showProfile)
-
-            previousSenderId = currentMessage.sender.id
+            RoomMessageRow(currentMessage, isMessageSelected, reactMessage, /*showProfile*/ true)
         }
 
         if (isFetching) {
@@ -340,11 +332,8 @@ fun RoomMessageList(
         }
     }
 
-
     LaunchedEffect(lazyListState) {
         if (!isFetching) {
-
-
             snapshotFlow { lazyListState.firstVisibleItemIndex }
                 .collect { index ->
                     if (index == 0) {
@@ -354,8 +343,7 @@ fun RoomMessageList(
         }
     }
 
-
-
+    
 
 }
 
@@ -409,7 +397,7 @@ fun RoomMessageRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            if (!isModel) {
+            if (!isModel&&showImage) {
 
 
                 Card(
@@ -445,6 +433,9 @@ fun RoomMessageRow(
 
 
             }
+            else{
+                Spacer(modifier = Modifier.width(50.dp))
+            }
 
 
             Box(
@@ -452,8 +443,8 @@ fun RoomMessageRow(
                     .padding(
                         start = if (!isModel) 8.dp else 70.dp,
                         end = if (!isModel) 70.dp else 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
+                        top = if(showImage) 8.dp else 2.dp,
+
                     )
                     .background(
                         color = if (!isModel) Color.White else primary,
@@ -468,6 +459,7 @@ fun RoomMessageRow(
 
                         }
                     }
+
 
             ) {
                 Column {

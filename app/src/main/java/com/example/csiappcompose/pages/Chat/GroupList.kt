@@ -51,6 +51,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -92,71 +94,84 @@ import java.util.*
 
 
 @Composable
-fun addedGroups(viewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>){
+fun addedGroups(
+    viewModel: ChatViewModel,
+    navController: NavHostController,
+    selected: MutableState<String?>
+) {
+    val context = LocalContext.current
 
-    val context= LocalContext.current
-
-
-//    val chatViewModel : ChatViewModel= viewModel (factory = ChatViewModelFactory(context = context))
-//    val token by chatViewModel.token.collectAsState()
-//    val groupList by chatViewModel.groupList.collectAsState()
-
-    val result= viewModel.groupChatResult.observeAsState()
+    // Observing ViewModel states
+    val groupChatResult = viewModel.groupChatResult.observeAsState()
     val tokenState = viewModel.token.collectAsState(initial = "")
     val token = tokenState.value
 
-
-
+    // Fetching the token when the composable is launched
     LaunchedEffect(Unit) {
         viewModel.fetchToken()
     }
 
+    // Main layout
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = PrimaryBackgroundColor)
+            .padding(top = 70.dp, start = 10.dp, end = 10.dp)
+    ) {
+        when (val response = groupChatResult.value) {
+            is NetWorkResponse.Error -> {
+                // Displaying error message
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = response.message ?: "An error occurred",
+                        color = Color.Red
+                    )
+                }
+            }
+            is NetWorkResponse.Loading -> {
+                // Displaying loading indicator
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is NetWorkResponse.Success -> {
+                // Displaying the list of groups
+                val groupList = response.data
+                groupList?.let {
+                    Column {
+                        row1()
+                        groupsListSection(
+                            groupList = it,
+                            navController = navController,
+                            token = token,
+                            selected = selected
+                        )
+                    }
+                } ?: run {
 
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No groups available",
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
 
-
-   Box(modifier = Modifier
-       .fillMaxSize()
-       .background(color = PrimaryBackgroundColor)
-       .padding(top = 70.dp, start = 10.dp, end = 10.dp)){
-
-
-
-       when (val result = result.value) {
-           is NetWorkResponse.Error -> {
-               Box(
-                   modifier = Modifier.fillMaxSize(),
-                   contentAlignment = Alignment.Center
-               ) {
-                   Text(text = result.message, color = Color.Red)
-               }
-           }
-           is NetWorkResponse.Loading -> {
-               Box(
-                   modifier = Modifier.fillMaxSize(),
-                   contentAlignment = Alignment.Center
-               ) {
-                   CircularProgressIndicator()
-               }
-           }
-           is NetWorkResponse.Success -> {
-               val groupList = result.data
-               Column {
-                   row1()
-                   groupsListSection(groupList = groupList, navController = navController, token = token, selected = selected)
-               }
-           }
-           else -> {}
-       }
-
-
-       //to display image
-
-
-
-
-   }
-
+            else->{}
+        }
+    }
 }
+
 
 @Composable
 fun row1(){
@@ -195,50 +210,50 @@ fun row1(){
 @Composable
 fun groupsListSection(navController: NavHostController, token: String?, groupList: List<GroupListItem>,
                       selected: MutableState<String?>) {
-    val listState = rememberLazyListState()
-    var isScrollable by remember { mutableStateOf(false) }
+    //val listState = rememberLazyListState()
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp)
-            .clip(RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
 
-    ) {
-    LazyColumn(
-        modifier = Modifier
-            .background(color = Color(0xFFF7F7F7))
-            .fillMaxWidth()
-            .wrapContentHeight()
-    ) {
-        items(groupList) { item ->
-            groupListItem(groupListItem = item, token = token, navController = navController, selected = selected)
-        }
 
-//        if (listState.canScrollForward) {
-//            item {
-//                Spacer(modifier = Modifier.height(110.dp))
-//            }
-//        }
-       item {
-            //val bottomPadding = if (listState.canScrollForward) 110.dp else 0.dp
-            Spacer(modifier = Modifier
-                .height(110.dp)
-                .background(color = PrimaryBackgroundColor))
-        }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
 
-        if (isScrollable) {
-            item {
-                Spacer(modifier = Modifier.height(110.dp))
+                    .clip(RoundedCornerShape(16.dp)),
+                shape = RoundedCornerShape(16.dp),
+
+                ) {
+
+
+                LazyColumn(
+                    modifier = Modifier
+                        .background(color = Color(0xFFF7F7F7))
+                        .fillMaxWidth()
+
+                ) {
+                    items(groupList) { item ->
+                        groupListItem(
+                            groupListItem = item,
+                            token = token,
+                            navController = navController,
+                            selected = selected
+                        )
+                    }
+
+                }
             }
-        }
 
 
-    }
+
+        Spacer(modifier = Modifier.height(110.dp))
+
+
+
 }
 
-}
+
+
+
 
 
 @Composable
@@ -283,13 +298,13 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(vertical = 10.dp, horizontal = 15.dp),
+                .padding(vertical = 7.dp, horizontal = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Card(
                 modifier = Modifier
                     .padding(end = 28.dp)
-                    .size(60.dp),
+                    .size(50.dp),
                 shape = CircleShape,
             ) {
                 CompositionLocalProvider(LocalInspectionMode provides false) {
@@ -347,7 +362,7 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
                     )
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                     Row (
                         modifier = Modifier.fillMaxWidth(),

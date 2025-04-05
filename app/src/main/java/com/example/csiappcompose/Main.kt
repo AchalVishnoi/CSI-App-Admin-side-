@@ -68,6 +68,13 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
+import androidx.compose.animation.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavBackStackEntry
+import com.example.csiappcompose.viewModels.HomePageViewModel
+import com.example.csiappcompose.viewModels.HomePageViewModelFactory
+
 
 @OptIn(ExperimentalAnimationApi::class)
 
@@ -374,7 +381,7 @@ fun displayInFullScreen(image:String, dismiss:()-> Unit){
         .background(color = Color.Black).
         pointerInput(Unit) {
             detectVerticalDragGestures(
-                onDragEnd = {if(offsety<-250) dismiss()
+                onDragEnd = {if(offsety<-245||offsety>245) dismiss()
                 else offsety=0f},
                 onVerticalDrag = {_,dragAmount->offsety+=dragAmount}
             )

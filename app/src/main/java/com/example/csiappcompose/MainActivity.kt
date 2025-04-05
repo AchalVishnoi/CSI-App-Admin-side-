@@ -46,7 +46,11 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.google.firebase.FirebaseApp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 
 
 class MainActivity : ComponentActivity() {
@@ -63,6 +67,7 @@ class MainActivity : ComponentActivity() {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         // Initialize Firebase
         FirebaseApp.initializeApp(this)
@@ -76,7 +81,7 @@ class MainActivity : ComponentActivity() {
         // Retrieve FCM Token
         retrieveFCMToken()
 
-        // Initialize ViewModels
+
         val chatViewModel: ChatViewModel = ViewModelProvider(
             this,
             ViewModelFactory(applicationContext)
@@ -89,10 +94,27 @@ class MainActivity : ComponentActivity() {
             val imageLoader = ImageLoader.Builder(this).build()
 
             CSIAppComposeTheme {
-                Main(chatViewModel = chatViewModel)
+                MyApp(chatViewModel)
             }
         }
     }
+
+
+
+    @SuppressLint("NewApi")
+    @Composable
+    fun MyApp(chatViewModel: ChatViewModel) {
+        MaterialTheme(
+            colorScheme = lightColorScheme(),
+
+            content = {
+                Main(chatViewModel = chatViewModel)                // Replace with your composable screen
+            }
+        )
+    }
+
+
+
 
     // Function to retrieve FCM token
     private fun retrieveFCMToken() {
