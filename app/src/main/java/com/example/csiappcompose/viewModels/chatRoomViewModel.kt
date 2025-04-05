@@ -188,6 +188,8 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
     }
 
     fun sendMessage(message: String, mentionList:List<Int>,context: Context,soundResId: Int) {
+
+
         val tempMessage = oldChatMessage(
             id = null,
             content = message,

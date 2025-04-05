@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET"/>
 
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:forceDarkAllowed="false"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/csi_logo_without_background"
         android:label="CSI Admin App"
@@ -18,9 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CSIAppCompose"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
-
             android:exported="true"
             android:label="CSI Admin App"
             android:theme="@style/Theme.CSIAppCompose"
@@ -36,8 +35,17 @@
             android:exported="true"
             android:label="CSI Admin App"
             android:theme="@style/Theme.CSIAppCompose"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity android:name=".pages.HomePage.CreateEventActivity"
+             android:exported="true"
+
+            android:theme="@style/Theme.CSIAppCompose"
+            android:windowSoftInputMode="adjustResize" />
+
+
+
+
 
         <service
             android:name=".MyFirebaseMessagingService"
@@ -46,7 +54,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>

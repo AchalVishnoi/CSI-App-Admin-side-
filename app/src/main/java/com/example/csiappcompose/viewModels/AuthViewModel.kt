@@ -24,7 +24,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     val loginResult: StateFlow<Result<String>?> = _loginResult
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading  // ✅ Expose loading state
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     init {
         viewModelScope.launch {

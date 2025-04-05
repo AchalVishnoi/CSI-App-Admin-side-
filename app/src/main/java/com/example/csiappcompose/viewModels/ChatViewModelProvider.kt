@@ -31,3 +31,15 @@ class ChatRoomViewModelFactory(private val roomId: Int, private val token: Strin
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+class HomePageViewModelFactory(private val context: Context): ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(HomePageViewModel::class.java))
+            return HomePageViewModel(context) as T
+
+
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
