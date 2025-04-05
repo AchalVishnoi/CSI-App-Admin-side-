@@ -281,8 +281,8 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
         ) {
             composable("splash") { SplashScreen(navController, authViewModel) }
             composable("login") { LoginPage(navController, authViewModel) }
-            composable("home") { HomePage() }
-            composable("home_page") { HomePage() }
+            composable("home") { HomePage(selected = selected) }
+            composable("home_page") { HomePage(selected = selected) }
             composable("task") { TaskPage() }
             composable("profile") { ProfilePage() }
             composable("chat_room") { ChatPage(chatViewModel = chatViewModel, navController = navController, selected = selected) }
@@ -360,7 +360,7 @@ fun TopBar() {
 @Composable
 fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>) {
     when(selectedIndex){
-        0 -> HomePage(modifier)
+        0 -> HomePage(modifier, selected = selected)
         1 -> TaskPage(modifier)
         2 -> ProfilePage( )
         3 -> ChatPage(modifier, chatViewModel = chatViewModel, navController = navController,selected )
