@@ -151,7 +151,7 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
                 withContext(Dispatchers.Main) { _isFetching.value = true }
 
                 val response = RetrofitInstance.apiService
-                    .getOldMessages(roomId, "Token $token", currentPage, 20)
+                    .getOldMessages(roomId, "Token $token", currentPage, 100)
                     .results
 
                 withContext(Dispatchers.Main) {

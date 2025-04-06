@@ -1,6 +1,9 @@
 package com.example.csiappcompose.dataModelsResponse
 
+import java.util.UUID
+
 data class oldChatMessage(
+    val localId: String = UUID.randomUUID().toString(),
     val attachment: Any?,
     var content: String,
     val created_at: String?,

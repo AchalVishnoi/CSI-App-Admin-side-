@@ -169,11 +169,11 @@ fun getLottieResId(fileName: String): Int {
         "Like"-> R.raw.thumbsup1_anim
         "Anger"->R.raw.angry_anim
         "HaHa"->R.raw.ha_ha_anim
-        "Heart"->R.raw.heart_anim
+        "Heart"->R.raw.heart_anim2
         "Smile"->R.raw.smile_anim
         "Sad"->R.raw.sad_anim
         "Cool"->R.raw.cool_anim
-        else -> R.raw.heart_anim
+        else -> R.raw.heart_anim2
     }
 
 }

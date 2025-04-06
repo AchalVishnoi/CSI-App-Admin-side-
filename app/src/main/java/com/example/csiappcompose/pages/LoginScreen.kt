@@ -1,6 +1,8 @@
 package com.example.csiappcompose.pages
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 //import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,41 +29,82 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.csiappcompose.MainActivity
+import com.example.csiappcompose.SplashScreenActivity
 import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
+import com.example.csiappcompose.viewModels.AuthViewModel
 
 class LoginScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent{
-            LoginScreenFun()
+            val authViewModel: AuthViewModel = viewModel()
+            LoginScreenFun(authViewModel)
+
+            val loginResult by authViewModel.loginResult.collectAsState()
+            val isLoading by authViewModel.isLoading.collectAsState()
+
+
+
+            LaunchedEffect(loginResult) {
+                loginResult?.let { result ->
+                    result.onSuccess {
+
+
+                        //to remove from backstack
+                        val intent = Intent(this@LoginScreen, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+
+
+                    }
+                    result.onFailure {
+                        Toast.makeText(this@LoginScreen, "Login Failed: ${it.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+
 @Composable
-fun LoginScreenFun() {
+fun LoginScreenFun(authViewModel: AuthViewModel) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-//    val loginResult by authViewModel.loginResult.collectAsState()
-//    val isLoading by authViewModel.isLoading.collectAsState()
-    //val context = LocalContext.current
+
+
+    val loginResult by authViewModel.loginResult.collectAsState()
+    val isLoading by authViewModel.isLoading.collectAsState()
+
+    val context = LocalContext.current
+
 
 //    LaunchedEffect(loginResult) {
 //        loginResult?.let { result ->
 //            result.onSuccess {
-//                navController.navigate("home") {
-//                    popUpTo("login") { inclusive = true }
+//
+//
+//                //to remove from backstack
+//                val intent = Intent(context, MainActivity::class.java).apply {
+//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 //                }
+//                context.startActivity(intent)
+//
+//
 //            }
 //            result.onFailure {
 //                Toast.makeText(context, "Login Failed: ${it.message}", Toast.LENGTH_SHORT).show()
 //            }
 //        }
 //    }
+
+
 
     Box(
         modifier = Modifier
@@ -127,39 +171,35 @@ fun LoginScreenFun() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Login Button with Loading Indicator
-            Button(
-                onClick = {
-                   // authViewModel.loginUser(email.value, password.value)
-                          },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0057FF)),
-                //enabled = !isLoading  // Disable button when loading
-            ) {
-//                if (isLoading) {
-//                    CircularProgressIndicator(
-//                        color = Color.White,
-//                        modifier = Modifier.size(24.dp)
-//                    )
-//                } else {
-                 Text("Login", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-//                }
+
+
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                Button(
+                    onClick = { authViewModel.loginUser(email.value, password.value)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0057FF))
+
+                ) {
+                    Text("Login")
+                }
             }
 
             // Forgot Password
             Text(
                 text = "Forgot Password",
-                fontSize = 14.sp,
-                color = Color.Black,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .clickable {
-                        // Handle forgot password action
-                    }
+
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .clickable {
+                    val intent = Intent(context, ForgetScreen::class.java)
+                    context.startActivity(intent)
+                }
             )
         }
     }

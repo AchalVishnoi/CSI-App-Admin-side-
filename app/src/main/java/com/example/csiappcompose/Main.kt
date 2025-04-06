@@ -71,6 +71,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import androidx.compose.animation.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavBackStackEntry
 import com.example.csiappcompose.viewModels.HomePageViewModel
 import com.example.csiappcompose.viewModels.HomePageViewModelFactory
@@ -231,11 +232,11 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
 
         AnimatedNavHost(
             navController = navController,
-            startDestination = "splash",
+            startDestination = "home",
             enterTransition = {
                 when {
                     // Zoom In effect when navigating away from Splash
-                    initialState.destination.route =="splash" -> fadeIn(animationSpec = tween(500))
+                   // initialState.destination.route =="splash" -> fadeIn(animationSpec = tween(500))
 
 
                     selectedIndex > previousIndex -> slideInHorizontally(
@@ -255,7 +256,7 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
             exitTransition = {
                 when {
                     // Zoom Out effect when leaving Splash
-                    targetState.destination.route == "splash" -> fadeOut(animationSpec = tween(500))
+                   // targetState.destination.route == "splash" -> fadeOut(animationSpec = tween(500))
 
                     // Slide Out to Left when moving to a higher index
                     selectedIndex > previousIndex -> slideOutHorizontally(
@@ -279,10 +280,10 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
                 slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
             }
         ) {
-            composable("splash") { SplashScreen(navController, authViewModel) }
-            composable("login") { LoginPage(navController, authViewModel) }
-            composable("home") { HomePage() }
-            composable("home_page") { HomePage() }
+            //composable("splash") { SplashScreen(navController) }
+            //composable("login") { LoginPage(navController, authViewModel) }
+            composable("home") { HomePage(selected=selected) }
+            composable("home_page") { HomePage(selected = selected) }
             composable("task") { TaskPage() }
             composable("profile") { ProfilePage() }
             composable("chat_room") { ChatPage(chatViewModel = chatViewModel, navController = navController, selected = selected) }
@@ -331,28 +332,32 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
     }
 }
 
+
+@Preview
 @Composable
 fun TopBar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF0A3D91), shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)) // Blue background with rounded bottom corners
+            .background(Color(0xFF0A3D91), shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Left Icon
         Icon(
-            painter = painterResource(id = R.drawable.csi_logo), // Replace with actual icon resource
+            painter = painterResource(id = R.drawable.csi_logo_without_background),
             contentDescription = "Left Icon",
-            tint = Color.White
+            tint = Color.White,
+            modifier = Modifier.size(30.dp)
         )
 
         // Right Profile Icon
         Icon(
             painter = painterResource(id = R.drawable.profile_icon), // Replace with actual icon resource
             contentDescription = "Profile Icon",
-            tint = Color.White
+            tint = Color.White,
+            modifier = Modifier.size(30.dp)
         )
     }
 }
@@ -360,7 +365,7 @@ fun TopBar() {
 @Composable
 fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>) {
     when(selectedIndex){
-        0 -> HomePage(modifier)
+        0 -> HomePage(modifier,selected)
         1 -> TaskPage(modifier)
         2 -> ProfilePage( )
         3 -> ChatPage(modifier, chatViewModel = chatViewModel, navController = navController,selected )

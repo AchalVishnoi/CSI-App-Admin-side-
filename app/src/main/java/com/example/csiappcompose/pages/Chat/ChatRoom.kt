@@ -311,13 +311,12 @@ fun RoomMessageList(
         reverseLayout = true,
         state = lazyListState
     ) {
-        items(messages)
-        { currentMessage ->
+        itemsIndexed(messages, key = { _, msg -> msg.localId }) { index, currentMessage ->
 
+            val showProfile = index == messages.lastIndex ||
+                    messages.getOrNull(index + 1)?.sender?.id != currentMessage.sender.id
 
-           // val showProfile = index == messages.lastIndex || messages[index + 1].sender.id != currentMessage.sender.id
-
-            RoomMessageRow(currentMessage, isMessageSelected, reactMessage, /*showProfile*/ true)
+            RoomMessageRow(currentMessage, isMessageSelected, reactMessage, showProfile)
         }
 
         if (isFetching) {
@@ -341,6 +340,16 @@ fun RoomMessageList(
                     }
                 }
         }
+    }
+
+
+    val previousMessageCount = remember { mutableStateOf(messages.size) }
+
+    LaunchedEffect(messages.size) {
+        if (messages.size > previousMessageCount.value) {
+            lazyListState.scrollToItem(0)
+        }
+        previousMessageCount.value = messages.size
     }
 
     
@@ -394,7 +403,7 @@ fun RoomMessageRow(
                     )
                 },
             horizontalArrangement = if (!isModel) Arrangement.Start else Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
 
             if (!isModel&&showImage) {
@@ -402,7 +411,7 @@ fun RoomMessageRow(
 
                 Card(
                     modifier = Modifier
-                        .padding(end = 10.dp)
+                        .padding(end = 5.dp, start = 3.dp,top=5.dp)
                         .size(40.dp),
                     shape = CircleShape,
                 ) {
@@ -448,7 +457,10 @@ fun RoomMessageRow(
                     )
                     .background(
                         color = if (!isModel) Color.White else primary,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(bottomStart = 12.dp
+                            , bottomEnd = 12.dp,
+                            topStart= if(!isModel&&showImage) 0.dp else 12.dp,
+                            topEnd = if(isModel&&showImage) 0.dp else 12.dp)
                     )
                     .padding(12.dp)
                     .pointerInput(Unit) {

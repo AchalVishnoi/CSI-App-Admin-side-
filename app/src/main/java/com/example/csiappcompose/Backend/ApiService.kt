@@ -1,6 +1,9 @@
 package com.example.csiappcompose.Backend
 
+import com.example.csiappcompose.dataModelsRequests.ForgotPasswordRequest
+import com.example.csiappcompose.dataModelsRequests.ForgotPasswordResponse
 import com.example.csiappcompose.dataModelsRequests.LoginRequest
+import com.example.csiappcompose.dataModelsRequests.resetPasswordRequest
 import com.example.csiappcompose.dataModelsResponse.EventItem
 import com.example.csiappcompose.dataModelsResponse.GroupListItem
 import com.example.csiappcompose.dataModelsResponse.HomePageStats
@@ -26,6 +29,17 @@ interface ApiService {
 
     @POST("api/user/login/")
     suspend fun login(@Body LoginRequest: LoginRequest) : Response<LoginResponse>
+
+    @POST("api/user/forgot-password/")
+    suspend fun forgetPassword(
+        @Body request: ForgotPasswordRequest
+    ): Response<ForgotPasswordResponse>
+
+    @POST("api/user/reset-password/")
+    suspend fun resetPassword(
+        @Body request: resetPasswordRequest
+    ): Response<ForgotPasswordResponse>
+
 
     @POST("api/user/logout/")
     suspend fun logout(@Header("Authorization") token: String) : Response<LogoutResponse>

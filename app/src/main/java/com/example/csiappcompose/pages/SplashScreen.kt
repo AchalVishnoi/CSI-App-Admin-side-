@@ -18,10 +18,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.csiappcompose.R
 
 @Composable
-fun SplashScreen(navController: NavController, authViewModel: AuthViewModel) {
+fun SplashScreen(navController: NavController) {
+
+
+    val authViewModel: AuthViewModel = viewModel()
+
 
     val token by authViewModel.token.collectAsStateWithLifecycle(initialValue = null)
 
