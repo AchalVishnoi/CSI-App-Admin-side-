@@ -1,5 +1,7 @@
 package com.example.csiappcompose.Backend
 
+import AttendanceDay
+import android.telecom.Call
 import com.example.csiappcompose.dataModelsRequests.ForgotPasswordRequest
 import com.example.csiappcompose.dataModelsRequests.ForgotPasswordResponse
 import com.example.csiappcompose.dataModelsRequests.LoginRequest
@@ -20,6 +22,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -128,6 +131,28 @@ interface ApiService {
         @Part poster: MultipartBody.Part?,
         @Part gallery: List<MultipartBody.Part>?
     ): Response<createEvent>
+
+    @Multipart
+    @POST("api/announcement/create/")
+    suspend fun createAnnouncement(
+        @Header("Authorization") token: String,
+        @Part("title") title: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("guidelines") guidelines: RequestBody,
+        @Part("venue") venue: RequestBody,
+        @Part("registration_start_date") registrationStartDate: RequestBody,
+        @Part("registration_end_date") registrationEndDate: RequestBody,
+        @Part("event_date") eventDate: RequestBody,
+        @Part("status") status: RequestBody,
+        @Part("is_registrations_open") isRegistrationsOpen: RequestBody,
+        @Part("payment_required") paymentRequired: RequestBody,
+        @Part("amount") amount: RequestBody,
+        @Part poster: MultipartBody.Part?,
+        @Part gallery: List<MultipartBody.Part>?
+    ): Response<createEvent>
+
+    @GET("api/attendance") // change the endpoint to the correct one
+    suspend fun getAttendance(): List<AttendanceDay>
 
 
 }

@@ -2,6 +2,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -49,6 +52,8 @@ import com.example.csiappcompose.viewModels.HomePageViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.csiappcompose.TaskDetailsActivity
 import com.example.csiappcompose.pages.HomePage.CreateEvent
 import com.example.csiappcompose.pages.HomePage.CreateEventActivity
@@ -629,6 +634,84 @@ fun announcementsItem(
     }
 
 }
+
+
+
+@Preview
+@Composable
+fun AttendanceCard(viewModel: AttendanceViewModel = viewModel()) {
+    val attendanceList = viewModel.attendanceList
+
+    Card(
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F7FA)) // Light background
+    ) {
+        val day = "Mon"
+        val date = "28"
+        val status = "Present"
+           Row {
+               Days(day,date ,status)
+               Days(day,date ,status)
+               Days(day,date ,status)
+               Days(day,date ,status)
+               Days(day,date ,status)
+               Days(day,date ,status)
+               Days(day,date ,status)
+           }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+
+            Button(
+                onClick = {
+                /* TODO: Trigger attendance API */
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005EFF))
+            ) {
+                Text("Mark Attendance", color = Color.White)
+            }
+        }
+
+}
+@Composable
+fun Days(
+day:String,date:String,status:String
+){
+    Card(
+        modifier = Modifier
+            .padding(4.dp).height(80.dp).width(46.dp).border(0.5.dp, Color.Black, RoundedCornerShape(12.dp)),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F7FA))
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(day ,color = Color.Black, fontSize = 15.sp, fontWeight= FontWeight.Bold,modifier = Modifier.align(Alignment.CenterHorizontally))
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(date, color = Color.Black , fontSize = 12.sp, fontWeight= FontWeight.Bold,modifier = Modifier.align(Alignment.CenterHorizontally))
+        Spacer(modifier = Modifier.height(8.dp))
+        Icon(
+            imageVector = Icons.Default.Circle,
+            contentDescription = "status",
+            tint = if (status == "Present") Color.Green else if(status=="Abscent") Color.Red else Color.Gray,
+            modifier = Modifier
+                .size(12.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+    }
+}
+
+
+
+
 
 
 var ongoingEvents=listOf(
