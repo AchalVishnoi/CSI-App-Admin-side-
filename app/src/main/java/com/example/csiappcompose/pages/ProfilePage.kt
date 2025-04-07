@@ -54,7 +54,7 @@ fun ProfilePage() {
 
         Button(onClick = {
             context.let { ctx -> // ✅ Ensuring context isn't null
-                            val intent = Intent(ctx, CreateAnnouncement()::class.java).apply {
+                            val intent = Intent(ctx, FillYourDetail()::class.java).apply {
                             }
                           ctx.startActivity(intent)
                         }

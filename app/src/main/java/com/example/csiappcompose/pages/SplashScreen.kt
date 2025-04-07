@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.csiappcompose.R
+import com.example.csiappcompose.ui.theme.primary
 
 @Composable
 fun SplashScreen(navController: NavController) {
@@ -48,12 +49,12 @@ fun SplashUI() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Blue),
+            .background(color = primary),
         contentAlignment = Alignment.Center
     ) {
         Image(
             modifier = Modifier.fillMaxSize(0.3f),
-            painter = painterResource(id = R.drawable.csi_logo),
+            painter = painterResource(id = R.drawable.csi_logo_without_background),
             contentDescription = "CSI Logo"
 
         )

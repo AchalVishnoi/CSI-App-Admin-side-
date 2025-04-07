@@ -33,5 +33,17 @@ class TaskViewModel(private val context: Context) {
 //            }
 //
 //        }
+//        viewModelScope.launch{
+//
+//            DataStoreManager.getToken(context).collect{ savedToken->
+//                _token.value=savedToken
+//                if (!savedToken.isNullOrEmpty()) {
+//                    getChatList(savedToken)
+//                }
+//                else{
+//                    _groupChatResult.value= NetWorkResponse.Error("failed to load data")
+//                }
+//            }
+
+        }
     }
-}

@@ -11,6 +11,7 @@ import com.example.csiappcompose.dataModelsResponse.LoginResponse
 import com.example.csiappcompose.dataModelsResponse.LogoutResponse
 import com.example.csiappcompose.dataModelsResponse.announcmentDisplay
 import com.example.csiappcompose.dataModelsResponse.createEvent
+import com.example.csiappcompose.dataModelsResponse.fillYourDetailsResponse
 import com.example.csiappcompose.dataModelsResponse.oldMessagesResponse
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
 import okhttp3.MultipartBody
@@ -43,6 +44,24 @@ interface ApiService {
 
     @POST("api/user/logout/")
     suspend fun logout(@Header("Authorization") token: String) : Response<LogoutResponse>
+
+
+    @Multipart
+    @POST("/api/user/profile/fill/")
+    suspend fun submitProfile(
+        @Header("Authorization") token: String,
+        @Part photo: MultipartBody.Part,
+        @Part("branch") branch: RequestBody,
+        @Part("domain") domain: RequestBody,
+        @Part("dob") dob: RequestBody,
+        @Part("linkedin_url") linkedinUrl: RequestBody,
+        @Part("bio") bio: RequestBody,
+        @Part("github_url") githubUrl: RequestBody,
+        @Part("achievements") achievements: RequestBody,
+        @Part("hosteller") hosteller: RequestBody
+    ) : Response<fillYourDetailsResponse>
+
+
 
     @GET("api/chat/groups/")
     suspend fun getJoinedGroups(@Header("Authorization") token: String) : Response<List<GroupListItem>>

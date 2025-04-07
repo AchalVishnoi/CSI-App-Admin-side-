@@ -32,6 +32,11 @@
 
 
         <activity
+            android:name=".pages.FillYourDetail"
+            android:exported="false"
+            android:theme="@style/Theme.CSIAppCompose"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
             android:name=".pages.CreateAnnouncement"
             android:exported="false" />
         <activity

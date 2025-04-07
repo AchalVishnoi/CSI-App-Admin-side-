@@ -65,7 +65,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     val token = response.body()?.token
                     if (!token.isNullOrEmpty()) {
                         saveToken(token)
-                        _loginResult.value = Result.success(token)
+                        _loginResult.value = Result.success(if(response.body()?.is_completed==true) "complete details" else "not complete details")
 
 
                     } else {

@@ -269,8 +269,83 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
     }
 
 
+    val isProfileLoading = mutableStateOf(false)
+    val profileSuccessMessage = mutableStateOf<String?>(null)
+    val profileErrorMessage = mutableStateOf<String?>(null)
 
+    fun submitProfileDetails(
+        branch: String,
+        domain: String,
+        dob: String,
+        linkedinUrl: String,
+        bio: String,
+        githubUrl: String,
+        achievements: String? = null,
+        hosteller: Boolean,
+        photo: MultipartBody.Part?,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val savedToken = DataStoreManager.getToken(context).firstOrNull()
+
+                if (!savedToken.isNullOrEmpty()) {
+                    isProfileLoading.value = true
+
+
+                    val formatterInput = DateTimeFormatter.ofPattern("d/M/yyyy")
+                    val parsedDate = LocalDate.parse(dob, formatterInput)
+                    val formattedDob = parsedDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+                    val response = RetrofitInstance.apiService.submitProfile(
+                        token = "Token $savedToken",
+                        photo = photo!!,
+                        branch = branch.toPlainRequestBody(),
+                        domain = domain.toPlainRequestBody(),
+                        dob = formattedDob.toPlainRequestBody(),
+                        linkedinUrl = linkedinUrl.toPlainRequestBody(),
+                        bio = bio.toPlainRequestBody(),
+                        githubUrl = githubUrl.toPlainRequestBody(),
+                        achievements = (achievements ?: "").toPlainRequestBody(),
+                        hosteller = hosteller.toPlainRequestBody()
+                    )
+
+                    if (response.isSuccessful) {
+                        profileSuccessMessage.value = "Profile submitted successfully!"
+                        Toast.makeText(context, profileSuccessMessage.value, Toast.LENGTH_LONG).show()
+                        Log.i("PROFILE", "submitProfileDetails: Profile updated")
+
+                        onSuccess() // ✅ success callback triggered
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        profileErrorMessage.value = errorBody ?: "Failed to submit profile"
+                        Log.e("PROFILE", "submitProfileDetails: $errorBody")
+                        Toast.makeText(context, profileErrorMessage.value, Toast.LENGTH_LONG).show()
+                    }
+
+                } else {
+                    profileErrorMessage.value = "Token not found. Please log in again."
+                    Toast.makeText(context, profileErrorMessage.value, Toast.LENGTH_LONG).show()
+                }
+
+            } catch (e: IOException) {
+                profileErrorMessage.value = "Network error: Please check your connection"
+                Log.e("ERROR", "IOException: ${e.message}")
+            } catch (e: Exception) {
+                profileErrorMessage.value = e.message ?: "An unexpected error occurred"
+                Log.e("ERROR", "Exception: ${e.message}")
+            } finally {
+                isProfileLoading.value = false
+            }
         }
+    }
+
+
+
+
+
+
+}
 
 
 fun formatToISO8601(date: String): String {

@@ -332,8 +332,6 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
     }
 }
 
-
-@Preview
 @Composable
 fun TopBar() {
     Row(
@@ -366,6 +364,7 @@ fun TopBar() {
 fun ContentScreen(modifier: Modifier,selectedIndex: Int,chatViewModel: ChatViewModel,navController: NavHostController,selected: MutableState<String?>) {
     when(selectedIndex){
         0 -> HomePage(modifier,selected)
+        0 -> HomePage(modifier, selected = selected)
         1 -> TaskPage(modifier)
         2 -> ProfilePage( )
         3 -> ChatPage(modifier, chatViewModel = chatViewModel, navController = navController,selected )
