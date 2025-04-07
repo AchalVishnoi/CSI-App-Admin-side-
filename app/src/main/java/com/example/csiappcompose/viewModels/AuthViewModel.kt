@@ -35,6 +35,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val _resetPasswordResult = MutableStateFlow<Result<String>?>(null)
     val resetPasswordResult: StateFlow<Result<String>?> = _resetPasswordResult
 
+    private val _detailsComplete = MutableStateFlow<Boolean>(false)
+    val detailCompletedStatus: StateFlow<Boolean> = _detailsComplete
+
+
+
 
 
 
@@ -47,6 +52,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             DataStoreManager.getToken(context).collect { savedToken ->
                 _token.value = savedToken
+            }
+            DataStoreManager.getCompleteDetailsStatus(context).collect { status ->
+
+                _detailsComplete.value= if(status=="detailsComplete") true else false
+
             }
         }
     }
@@ -67,6 +77,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                         saveToken(token)
                         _loginResult.value = Result.success(if(response.body()?.is_completed==true) "complete details" else "not complete details")
 
+                        if(response.body()?.is_completed==true) {
+                            saveCompleteDetailsStatus("detailsComplete")
+                        }
+                        else{
+                            saveCompleteDetailsStatus("detailsIncomplete")
+                        }
 
                     } else {
                         _loginResult.value = Result.failure(Exception("Invalid Token"))
@@ -201,7 +217,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
+    fun saveCompleteDetailsStatus(detailCompletedStatus: String) {
+        viewModelScope.launch {
+            DataStoreManager.saveCompleteDetailsStatus(context, detailCompletedStatus)
+        }
+    }
 
 
 

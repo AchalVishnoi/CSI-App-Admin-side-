@@ -20,6 +20,7 @@ import com.example.csiappcompose.pages.SplashUI
 import com.example.csiappcompose.viewModels.AuthViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.*
+import com.example.csiappcompose.pages.FillYourDetail
 
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,11 +30,15 @@ class SplashScreenActivity : AppCompatActivity() {
         setContent {
             val authViewModel: AuthViewModel = viewModel()
             val token by authViewModel.token.collectAsStateWithLifecycle(initialValue = null)
+            val detailsStatus by authViewModel.detailCompletedStatus.collectAsState()
+
+
 
             LaunchedEffect(token) {
                 delay(2000)
                 val destination = if (!token.isNullOrEmpty()) {
-                    Intent(this@SplashScreenActivity, MainActivity::class.java)
+                    if(detailsStatus==true) Intent(this@SplashScreenActivity, MainActivity::class.java)
+                    else Intent(this@SplashScreenActivity, FillYourDetail::class.java)
                 } else {
                     Intent(this@SplashScreenActivity, LoginScreen::class.java)
                 }

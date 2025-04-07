@@ -15,6 +15,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 object DataStoreManager {
     private val TOKEN_KEY = stringPreferencesKey("auth_token")
+    private val COMPLETE_DETAILS_STATUS = stringPreferencesKey("complete_details_status")
 
 
     suspend fun saveToken(context: Context, token: String) {
@@ -22,6 +23,7 @@ object DataStoreManager {
             prefs[TOKEN_KEY] = token
         }
     }
+
 
 
     fun getToken(context: Context): Flow<String?> {
@@ -34,6 +36,18 @@ object DataStoreManager {
     suspend fun clearToken(context: Context) {
         context.dataStore.edit { prefs ->
             prefs.remove(TOKEN_KEY)
+        }
+    }
+
+    suspend fun saveCompleteDetailsStatus(context: Context, detailCompleted:String) {
+        context.dataStore.edit { prefs ->
+            prefs[COMPLETE_DETAILS_STATUS] = detailCompleted
+        }
+    }
+
+    fun getCompleteDetailsStatus(context: Context): Flow<String?> {
+        return context.dataStore.data.map { prefs ->
+            prefs[COMPLETE_DETAILS_STATUS]
         }
     }
 

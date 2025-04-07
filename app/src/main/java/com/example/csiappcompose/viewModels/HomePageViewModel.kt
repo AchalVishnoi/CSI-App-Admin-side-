@@ -1,5 +1,6 @@
 package com.example.csiappcompose.viewModels
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -193,9 +194,10 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
 
     val isLoading = mutableStateOf(false)
-    val successMessage = mutableStateOf<String?>(null)
+    val successMessage = mutableStateOf<Boolean?>(null)
     val errorMessage = mutableStateOf<String?>(null)
 
+    @SuppressLint("SuspiciousIndentation")
     fun submitEvent(
         title: String,
         description: String,
@@ -242,8 +244,9 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                     )
 
                     if (response.isSuccessful) {
-                        successMessage.value = "Event created successfully!"
-                        Toast.makeText(context, successMessage.value, Toast.LENGTH_LONG).show()
+                        successMessage.value = true
+                            Toast.makeText(context,"Event created successfully!".toString(), Toast.LENGTH_LONG).show()
+
                         Log.i("EVENT", "submitEvent : Event created successfully")
                     } else {
                         val errorBody = response.errorBody()?.string()
