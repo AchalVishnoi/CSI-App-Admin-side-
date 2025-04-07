@@ -30,18 +30,30 @@ class SplashScreenActivity : AppCompatActivity() {
         setContent {
             val authViewModel: AuthViewModel = viewModel()
             val token by authViewModel.token.collectAsStateWithLifecycle(initialValue = null)
-            val detailsStatus by authViewModel.detailCompletedStatus.collectAsState()
+            val detailsComplete by authViewModel.detailsComplete.collectAsStateWithLifecycle(initialValue = null)
+            val isLoading by authViewModel.isLoading.collectAsStateWithLifecycle()
 
+            LaunchedEffect(token, detailsComplete) {
 
+                if (isLoading) return@LaunchedEffect
 
-            LaunchedEffect(token) {
                 delay(2000)
-                val destination = if (!token.isNullOrEmpty()) {
-                    if(detailsStatus==true) Intent(this@SplashScreenActivity, MainActivity::class.java)
-                    else Intent(this@SplashScreenActivity, FillYourDetail::class.java)
-                } else {
-                    Intent(this@SplashScreenActivity, LoginScreen::class.java)
+
+                val destination = when {
+                    token.isNullOrEmpty() -> {
+
+                        Intent(this@SplashScreenActivity, LoginScreen::class.java)
+                    }
+                    detailsComplete == true -> {
+
+                        Intent(this@SplashScreenActivity, MainActivity::class.java)
+                    }
+                    else -> {
+
+                        Intent(this@SplashScreenActivity, FillYourDetail::class.java)
+                    }
                 }
+
                 startActivity(destination)
                 finish()
             }
