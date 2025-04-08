@@ -35,6 +35,7 @@ import com.example.csiappcompose.viewModels.NetWorkResponse
 import com.example.csiappcompose.viewModels.TaskViewModel
 import com.example.csiappcompose.viewModels.TaskViewModelFactory
 
+@Preview
 @Composable
 fun TaskPage(modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -77,7 +78,7 @@ fun TaskPage(modifier: Modifier = Modifier) {
             )
         }
 
-        null ->
+        else ->
         {
             // Handle the null case if needed
             Box(
