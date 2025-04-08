@@ -15,6 +15,7 @@ import com.example.csiappcompose.dataModelsResponse.announcmentDisplay
 import com.example.csiappcompose.dataModelsResponse.createEvent
 import com.example.csiappcompose.dataModelsResponse.fillYourDetailsResponse
 import com.example.csiappcompose.dataModelsResponse.oldMessagesResponse
+import com.example.csiappcompose.dataModelsResponse.profileData
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -112,6 +113,12 @@ interface ApiService {
     suspend fun ongoingEvent(
         @Header("Authorization") token: String
     ):Response<List<EventItem>>
+
+    @GET("/api/user/profile/detail/")
+    suspend fun profile(
+        @Header("Authorization") token: String
+    ): Response<profileData> // ✅ Correct: single object, not a list
+
 
     @Multipart
     @POST("api/event/create/")

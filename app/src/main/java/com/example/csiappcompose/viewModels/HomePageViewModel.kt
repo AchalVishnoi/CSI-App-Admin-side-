@@ -49,6 +49,9 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
     private val _upcomingEvents= MutableLiveData< NetWorkResponse<List<EventItem>>>()
     val upcomingEvents: LiveData< NetWorkResponse<List<EventItem>>> = _upcomingEvents
 
+    private val _profilePage = MutableLiveData< NetWorkResponse<Any>>()
+    val profilePage: LiveData< NetWorkResponse<Any>> = _profilePage
+
 
     fun fetchToken(){
 
@@ -56,6 +59,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
         _announcements.value= NetWorkResponse.Loading
         _ongoingEvents.value= NetWorkResponse.Loading
         _upcomingEvents.value= NetWorkResponse.Loading
+        _profilePage.value= NetWorkResponse.Loading
 
         viewModelScope.launch{
 
@@ -65,6 +69,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                     getHomeState(savedToken)
                     getAnnouncements(savedToken)
                     getEvents(savedToken)
+                    getProfile(savedToken)
 
                 }
                 else{
@@ -72,12 +77,41 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                     _announcements.value= NetWorkResponse.Error("failed to load data")
                     _ongoingEvents.value= NetWorkResponse.Error("failed to load data")
                     _upcomingEvents.value= NetWorkResponse.Error("failed to load data")
+                    _profilePage.value= NetWorkResponse.Error("failed to load data")
                 }
             }
 
         }
     }
 
+    fun getProfile( token:String){
+
+
+        viewModelScope.launch{
+            val response = RetrofitInstance.apiService.profile("Token $token")
+
+            Log.d("API_REQUEST", "Request: Token $token")
+
+
+            Log.d("API_RESPONSE", "Code: ${response.code()} Body: ${response.body()}")
+
+            try{
+                if(response.isSuccessful){
+                    response.body()?.let {
+                        _profilePage.value= NetWorkResponse.Success(it)
+                    }
+                }
+                else{
+                    _profilePage.value= NetWorkResponse.Error("failed to load data")
+                }
+            }
+            catch (e: Exception){
+                _profilePage.value= NetWorkResponse.Error("failed to load data")
+            }
+
+        }
+
+    }
 
 
 
