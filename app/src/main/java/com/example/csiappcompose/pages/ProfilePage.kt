@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +33,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -41,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -138,6 +141,7 @@ fun profileui(
         .height(200.dp)
 ) {
     val scrollState = rememberScrollState()
+    val context= LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -204,8 +208,9 @@ fun profileui(
             InfoCard(label = "D.O.B", value = dob)
 
             Spacer(modifier = Modifier.height(8.dp))
-            InfoCard(label = "Linkedin URL", value = linkedin)
-            InfoCard(label = "Git hub URL", value = github)
+
+//            InfoCard(label = "Linkedin URL", value = linkedin)
+//            InfoCard(label = "Git hub URL", value = github)
 
             Spacer(modifier = Modifier.height(16.dp))
             if(bio!=null) {
@@ -222,7 +227,54 @@ fun profileui(
                     InfoText(achievements)
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            Row(modifier=Modifier.fillMaxWidth()) {  }
+
+
+            Row(Modifier.width(100.dp).wrapContentHeight()) {
+
+
+
+                IconButton(onClick = {
+                    val intent = Intent(context, WebViewActivity::class.java)
+                    intent.putExtra("url", github)
+                    context.startActivity(intent)
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.github_png),
+                        contentDescription = "GitHub",
+                        tint = Color.Unspecified
+                    )
+                }
+
+
+
+
+                IconButton(onClick = {
+                    val intent = Intent(context, WebViewActivity::class.java)
+                    intent.putExtra("url", linkedin)
+                    context.startActivity(intent)
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.linkedin_png),
+                        contentDescription = "LinkedIn",
+                        tint = Color.Unspecified
+                    )
+                }
+            }
+
+
+
+
+
+
             Spacer(modifier = Modifier.height(24.dp))
+
+
+
+
             Button(
                 onClick = { /* Handle settings */ },
                 modifier = Modifier
