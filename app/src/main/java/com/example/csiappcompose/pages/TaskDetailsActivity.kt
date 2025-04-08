@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.sp
 class TaskDetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val data = intent.getStringExtra("data") ?: "No data"
+        val date = intent.getStringExtra("date") ?: "No data"
         val name = intent.getStringExtra("name") ?: "No name"
         val progress = intent.getIntExtra("progress", 0)
 
         setContent {
-            TaskDetailsScreen(data, name, progress)
+            TaskDetailsScreen(date, name, progress)
         }
     }
 }

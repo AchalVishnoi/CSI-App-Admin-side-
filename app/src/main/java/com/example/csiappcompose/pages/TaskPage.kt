@@ -11,22 +11,100 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.csiappcompose.PreviousTask
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.csiappcompose.TaskDetailsActivity
+import com.example.csiappcompose.dataModelsResponseTask.Completed
+import com.example.csiappcompose.dataModelsResponseTask.Current
+import com.example.csiappcompose.dataModelsResponseTask.Pending
+import com.example.csiappcompose.dataModelsResponseTask.TaskData
 import com.example.csiappcompose.pages.CreateTaskActivity
+import com.example.csiappcompose.pages.ShimmerEffect
 import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
+import com.example.csiappcompose.viewModels.HomePageViewModelFactory
+import com.example.csiappcompose.viewModels.NetWorkResponse
+import com.example.csiappcompose.viewModels.TaskViewModel
+import com.example.csiappcompose.viewModels.TaskViewModelFactory
 
 @Composable
 fun TaskPage(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(context))
+
+    val task = viewModel.taskPage.observeAsState()
+
+    when (val response = task.value) {
+        is NetWorkResponse.Error -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Failed to load data: ${response.message}", color = Color.Red)
+            }
+        }
+
+        is NetWorkResponse.Loading -> {
+            ShimmerEffect(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.Gray)
+            )
+        }
+
+        is NetWorkResponse.Success -> {
+            val taskSetValue = response.data as TaskData
+
+            taskUi(
+                completed =taskSetValue.completed,
+                pending=taskSetValue.pending,
+                current=taskSetValue.current,
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
+        }
+
+        null ->
+        {
+            // Handle the null case if needed
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "No data available", color = Color.Gray)
+            }
+        }
+    }
+}
+@Composable
+fun taskUi(
+    completed: List<Completed> = listOf(
+        Completed("attachment", "75", "abouttask", "endDate", "Groups", "Id", "informationUrl", "startingDate", "status", "Title")
+    ),
+    pending: List<Pending> = listOf(
+        Pending("attachment", 75, "abouttask", "endDate", listOf(), 1, "informationUrl", "startingDate", "status", "Title")
+    ),
+    current: List<Current> = listOf(
+        Current("attachment", 75, "abouttask", "endDate", listOf(), 1, "informationUrl", "startingDate", "status", "Title")
+    ),
+
+    modifier: Modifier
+   ){
+    val context = LocalContext.current
+
     Box(
         modifier = modifier.background(color = PrimaryBackgroundColor)
             .fillMaxSize()
@@ -57,9 +135,9 @@ fun TaskPage(modifier: Modifier = Modifier) {
                 }
             }
 
-            item { TaskSection("Current Tasks", sampleTasks()) }
-            item { TaskSection("Pending Tasks", sampleTasks() )}
-            item { TaskSection("Previous Tasks", sampleTasks()) }
+            item { TaskSection1("Current Tasks", current) }
+            item { TaskSection2("Pending Tasks", pending )}
+            item { TaskSection3("Previous Tasks", completed) }
 
 
         }
@@ -67,7 +145,7 @@ fun TaskPage(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TaskSection(title: String, tasks: List<PreviousTask>) {
+fun TaskSection1(title: String, tasks: List<Current>) {
     Column(modifier = Modifier.fillMaxWidth().background(color = PrimaryBackgroundColor)) {
         Row {
             Text(
@@ -89,7 +167,7 @@ fun TaskSection(title: String, tasks: List<PreviousTask>) {
 
         ) {
             items(tasks) { item ->
-                TaskItem(item)
+                TaskItem1(item)
             }
         }
 
@@ -99,20 +177,85 @@ fun TaskSection(title: String, tasks: List<PreviousTask>) {
 }
 
 @Composable
-fun TaskItem(task: PreviousTask) {
+fun TaskSection2(title: String, tasks: List<Pending>) {
+    Column(modifier = Modifier.fillMaxWidth().background(color = PrimaryBackgroundColor)) {
+        Row {
+            Text(
+                text = title,
+                fontSize = 24.sp,
+                color = Color.Black,
+                modifier = Modifier.padding(16.dp)
+            )
+            Icon(
+                imageVector = Icons.Filled.ArrowForward,
+                contentDescription = null,
+                tint = Color.Black,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+        LazyRow(
+            modifier = Modifier.background(color = Color.Transparent)
+                .fillMaxWidth()
+
+        ) {
+            items(tasks) { item ->
+                TaskItem2(item)
+            }
+        }
+
+
+        if(title.equals("Previous Tasks")) Spacer(Modifier.height(110.dp))
+    }
+}
+
+@Composable
+fun TaskSection3(title: String, tasks: List<Completed>) {
+    Column(modifier = Modifier.fillMaxWidth().background(color = PrimaryBackgroundColor)) {
+        Row {
+            Text(
+                text = title,
+                fontSize = 24.sp,
+                color = Color.Black,
+                modifier = Modifier.padding(16.dp)
+            )
+            Icon(
+                imageVector = Icons.Filled.ArrowForward,
+                contentDescription = null,
+                tint = Color.Black,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+        LazyRow(
+            modifier = Modifier.background(color = Color.Transparent)
+                .fillMaxWidth()
+
+        ) {
+            items(tasks) { item ->
+                TaskItem3(item)
+            }
+        }
+
+
+        if(title.equals("Previous Tasks")) Spacer(Modifier.height(110.dp))
+    }
+}
+
+
+@Composable
+fun TaskItem1(task: Current) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .width(150.dp)
-            .height(150.dp)
+            .width(180.dp)
+            .height(180.dp)
             .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
             .clickable {
                 context.let { ctx -> // ✅ Ensuring context isn't null
                     val intent = Intent(ctx, TaskDetailsActivity::class.java).apply {
-                        putExtra("data", task.data)
-                        putExtra("name", task.name)
-                        putExtra("progress", task.progress)
+                        putExtra("date", task.start_date)
+                        putExtra("name", task.title)
+                        putExtra("progress", task.current_progress)
                     }
                     ctx.startActivity(intent) // ✅ Starting activity with context
                 }
@@ -124,11 +267,11 @@ fun TaskItem(task: PreviousTask) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = task.data, fontSize = 12.sp, color = Color.Black)
-            Text(text = task.name, fontSize = 26.sp,color = Color.Red, fontWeight = FontWeight.Bold)
+            Text(text = task.end_date, fontSize = 12.sp, color = Color.Black)
+            Text(text = task.title, fontSize = 26.sp,color = Color.Red, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(38.dp))
             LinearProgressIndicator(
-                progress = task.progress / 100f, // Convert percentage to float value (0-1)
+                progress = task.current_progress / 100f, // Convert percentage to float value (0-1)
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)
@@ -139,7 +282,7 @@ fun TaskItem(task: PreviousTask) {
 
             // Progress Text
             Text(
-                text = "Progress: ${task.progress}%",
+                text = "Progress: ${task.current_progress}%",
                 fontSize = 12.sp,
                 color = Color.Black
             )
@@ -147,15 +290,92 @@ fun TaskItem(task: PreviousTask) {
     }
 }
 
-fun sampleTasks() = listOf(
-    PreviousTask("10/1/1992", "Task 1", 100),
-    PreviousTask("10/2/1992", "Task 2", 75),
-    PreviousTask("10/3/1992", "Task 3", 50),
-    PreviousTask("10/4/1992", "Task 4", 25),
-)
-
-@Preview
 @Composable
-fun PreviewHomePage() {
-    TaskPage(modifier = Modifier)
+fun TaskItem2(task: Pending) {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(180.dp)
+            .height(180.dp)
+            .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
+            .clickable {
+                context.let { ctx -> // ✅ Ensuring context isn't null
+                    val intent = Intent(ctx, TaskDetailsActivity::class.java).apply {
+                        putExtra("date", task.start_date)
+                        putExtra("name", task.title)
+                        putExtra("progress", task.current_progress)
+                    }
+                    ctx.startActivity(intent) // ✅ Starting activity with context
+                }
+            },// Border with rounded corners
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
+            ,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = task.end_date, fontSize = 12.sp, color = Color.Black)
+            Text(text = task.title, fontSize = 26.sp,color = Color.Red, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(38.dp))
+            LinearProgressIndicator(
+                progress = {
+                    task.current_progress / 100f // Convert percentage to float value (0-1)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .padding(8.dp,0.dp,8.dp,0.dp),
+                color = Color.Blue,
+            )
+
+            // Progress Text
+            Text(
+                text = "Progress: ${task.current_progress}%",
+                fontSize = 12.sp,
+                color = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+fun TaskItem3(task: Completed) {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(180.dp)
+            .height(180.dp)
+            .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
+            .clickable {
+                context.let { ctx -> // ✅ Ensuring context isn't null
+                    val intent = Intent(ctx, TaskDetailsActivity::class.java).apply {
+                        putExtra("date", task.start_date)
+                        putExtra("name", task.title)
+                        putExtra("progress", task.current_progress)
+                    }
+                    ctx.startActivity(intent) // ✅ Starting activity with context
+                }
+            },// Border with rounded corners
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
+            ,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = task.end_date, fontSize = 12.sp, color = Color.Black)
+            Text(text = task.title, fontSize = 26.sp,color = Color.Red, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(38.dp))
+
+            // Progress Text
+            Text(
+                text = "Progress: ${task.current_progress}",
+                fontSize = 12.sp,
+                color = Color.Black
+            )
+        }
+    }
 }

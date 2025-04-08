@@ -17,6 +17,7 @@ import com.example.csiappcompose.dataModelsResponse.fillYourDetailsResponse
 import com.example.csiappcompose.dataModelsResponse.oldMessagesResponse
 import com.example.csiappcompose.dataModelsResponse.profileData
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
+import com.example.csiappcompose.dataModelsResponseTask.TaskData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -117,7 +118,12 @@ interface ApiService {
     @GET("/api/user/profile/detail/")
     suspend fun profile(
         @Header("Authorization") token: String
-    ): Response<profileData> // ✅ Correct: single object, not a list
+    ): Response<profileData>
+
+    @GET("/api/task/my-tasks/")
+    suspend fun task(
+        @Header("Authorization") token: String
+    ): Response<TaskData>
 
 
     @Multipart
