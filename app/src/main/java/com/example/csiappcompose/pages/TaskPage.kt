@@ -25,21 +25,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.csiappcompose.TaskDetailsActivity
 import com.example.csiappcompose.dataModelsResponseTask.Completed
 import com.example.csiappcompose.dataModelsResponseTask.Current
+import com.example.csiappcompose.dataModelsResponseTask.Group
+import com.example.csiappcompose.dataModelsResponseTask.Member
 import com.example.csiappcompose.dataModelsResponseTask.Pending
 import com.example.csiappcompose.dataModelsResponseTask.TaskData
 import com.example.csiappcompose.pages.CreateTaskActivity
 import com.example.csiappcompose.pages.ShimmerEffect
 import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
+import com.example.csiappcompose.viewModels.HomePageViewModel
 import com.example.csiappcompose.viewModels.HomePageViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
-import com.example.csiappcompose.viewModels.TaskViewModel
-import com.example.csiappcompose.viewModels.TaskViewModelFactory
 
 @Preview
 @Composable
 fun TaskPage(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(context))
+    val viewModel: HomePageViewModel = viewModel(factory = HomePageViewModelFactory(context))
 
     val task = viewModel.taskPage.observeAsState()
 
@@ -72,34 +73,29 @@ fun TaskPage(modifier: Modifier = Modifier) {
                 pending=taskSetValue.pending,
                 current=taskSetValue.current,
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-                    .height(200.dp)
+                    .padding(horizontal = 10.dp)
+                    .fillMaxSize()
             )
         }
+        else->{
+            Text("No data available")
 
-        else ->
-        {
-            // Handle the null case if needed
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "No data available", color = Color.Gray)
-            }
         }
     }
 }
 @Composable
 fun taskUi(
     completed: List<Completed> = listOf(
-        Completed("attachment", "75", "abouttask", "endDate", "Groups", "Id", "informationUrl", "startingDate", "status", "Title")
+        Completed("attachment", "75", "abouttask", "endDate", listOf(Group(
+            1, listOf(Member("domain", "name", 1)), "name")), 1, "informationUrl", "startingDate", "status", "Title")
     ),
     pending: List<Pending> = listOf(
-        Pending("attachment", 75, "abouttask", "endDate", listOf(), 1, "informationUrl", "startingDate", "status", "Title")
+        Pending("attachment", 75, "abouttask", "endDate",listOf(Group(
+            1, listOf(Member("domain", "name", 1)), "name")), 1, "informationUrl", "startingDate", "status", "Title")
     ),
     current: List<Current> = listOf(
-        Current("attachment", 75, "abouttask", "endDate", listOf(), 1, "informationUrl", "startingDate", "status", "Title")
+        Current("attachment", 75, "aboutTask", "endDate", listOf(Group(
+            1, listOf(Member("domain", "name", 1)), "name")), 1, "informationUrl", "startingDate", "status", "Title")
     ),
 
     modifier: Modifier
