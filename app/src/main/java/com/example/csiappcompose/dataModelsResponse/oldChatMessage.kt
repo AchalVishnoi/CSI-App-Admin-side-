@@ -12,7 +12,7 @@ data class oldChatMessage(
     val is_edited: Boolean?,
     val mentions: List<Int?>?,
     val message_type: String?,
-    val parent_message: Any?,
+    val parent_message: parent_message?,
     var reactions: Reactions?,
     val room: Int?,
     val sender: SenderX,

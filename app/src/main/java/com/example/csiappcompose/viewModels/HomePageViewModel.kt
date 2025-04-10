@@ -278,7 +278,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
     fun submitProfileDetails(
         branch: String,
-        domain: String,
+        domain: Int,
         dob: String,
         linkedinUrl: String,
         bio: String,

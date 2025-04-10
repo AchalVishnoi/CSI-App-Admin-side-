@@ -93,7 +93,7 @@ fun ProfileFormScreen() {
     var selectedImageUri = remember { mutableStateOf<Uri?>(null) }
     var hosteller = remember { mutableStateOf(true) }
 
-    val domainOptions = listOf("App Dev", "Frontend", "Backend", "ML", "UI/UX", "Full Stack")
+    val domainOptions = listOf( "Backend", "Frontend","App Dev", "ML", "UI/UX", "Full Stack")
     val branchOptions = listOf("CSE", "CSE-AIDS", "CSE-AI/ML", "CS", "CST", "CS-HINDI", "IT", "ECE", "EN", "ME", "CIVIL")
     val genderOptions = listOf("MALE", "FEMALE", "OTHERS")
 
@@ -210,7 +210,7 @@ fun ProfileFormScreen() {
 
                         viewModel.submitProfileDetails(
                             branch = selectedBranches.value,
-                            domain = selectedDomains.value,
+                            domain = domainOptions.indexOf(selectedDomains.value),
                             dob = dob.value,
                             linkedinUrl = linkedin.value,
                             bio = bio.value,

@@ -5,13 +5,16 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewModelScope
 import com.example.csiappcompose.dataModelsResponse.Sender
 import com.example.csiappcompose.dataModelsResponse.chatMessages
 
 import com.example.csiappcompose.pages.Chat.playSound
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -110,14 +113,26 @@ class WebSocketManager(private val roomId: Int, private val token: String,privat
         })
     }
 
-    fun sendMessage(message: String,mentionUserList:List<Int>) {
+    fun sendMessage(message: String,mentionUserList:List<Int>,parentMessageId:Int?) {
         if (_isConnected.value) {
+
+
+            val escapedMessage = message
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t")
+
+
+
             val jsonMessage = """
                 {
                     "action": "send_message",
-                    "message": "$message",
+                    "message": "$escapedMessage",
                     "message_type": "text",
-                    "mentions": ${mentionUserList.joinToString(prefix = "[", postfix = "]")}
+                    "mentions": ${mentionUserList.joinToString(prefix = "[", postfix = "]")},
+                    "parent_message_id": $parentMessageId
                     
                 }
             """.trimIndent()
@@ -182,6 +197,7 @@ class WebSocketManager(private val roomId: Int, private val token: String,privat
     fun isSocketConnected(): Boolean {
         return _isConnected.value
     }
+
 
 
 

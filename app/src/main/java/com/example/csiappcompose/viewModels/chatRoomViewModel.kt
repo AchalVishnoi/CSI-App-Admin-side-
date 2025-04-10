@@ -1,25 +1,22 @@
 package com.example.csiappcompose.viewModels
 
 
-import android.R
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.csiappcompose.Backend.ApiService
 import com.example.csiappcompose.Backend.RetrofitInstance
 import com.example.csiappcompose.WebSocketManager
 import com.example.csiappcompose.dataModelsResponse.Sender
 import com.example.csiappcompose.dataModelsResponse.SenderX
-import com.example.csiappcompose.dataModelsResponse.Status
-import com.example.csiappcompose.dataModelsResponse.chatMessages
+import com.example.csiappcompose.dataModelsResponse.SenderXX
 import com.example.csiappcompose.dataModelsResponse.oldChatMessage
+import com.example.csiappcompose.dataModelsResponse.parent_message
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
-import com.example.csiappcompose.pages.Chat.playSound
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,12 +31,15 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import retrofit2.HttpException
+import java.util.concurrent.atomic.AtomicReference
 
 class ChatRoomViewModel(private val roomId: Int, private val token: String,private val context: Context) : ViewModel() {
 
     private val webSocketManager = WebSocketManager(roomId, token,context)
 
     private val _typingUsers = MutableStateFlow<Set<Sender>>(emptySet())
+
+
 
 
     val typingUsers = webSocketManager.typingUsers
@@ -79,7 +79,7 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
                         is_deleted = false,
                         is_edited = false,
                         mentions = emptyList(),
-                        parent_message = null,
+                        parent_message = msg.parent_message,
                         reactions = msg.reactions,
                         sendingStatus = "",
                         updated_at = msg.created_at,
@@ -91,6 +91,13 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
                         is_typing = msg.is_typing
                     )
                 }
+
+              /* if(convertedMessages.size>0) {
+
+                   _messageToReply.value = convertedMessages.get(0)
+                   Log.i("CHAT SCREEN", "new message= ${_messageToReply.value}")
+               }
+               */
 
                 _messages.update { currentMessages ->
                     val filteredMessages = if (currentMessages is NetWorkResponse.Success) {
@@ -187,7 +194,7 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
         }
     }
 
-    fun sendMessage(message: String, mentionList:List<Int>,context: Context,soundResId: Int) {
+    fun sendMessage(message: String, mentionList:List<Int>,context: Context,soundResId: Int,) {
 
 
         val tempMessage = oldChatMessage(
@@ -200,7 +207,15 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
             is_deleted = false,
             is_edited = false,
             mentions = mentionList,
-            parent_message = null,
+            parent_message = parent_message(
+                content = messageToReply.value?.content.toString(),
+                id=messageToReply.value?.id,
+                created_at = messageToReply.value?.created_at,
+                sender = SenderXX(
+                    id =messageToReply.value?.sender?.id,
+                    name = messageToReply.value?.sender?.first_name.toString(),
+                    photo = messageToReply.value?.sender?.photo.toString())
+                   ),
             reactions = null,
             sendingStatus = "sending",
             updated_at = null,
@@ -225,7 +240,9 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
 
 
 
-        webSocketManager.sendMessage(message,mentionList)
+        webSocketManager.sendMessage(message,mentionList,_messageToReply.value?.id)
+
+        _messageToReply.value=null
 
         Log.i("SEND BY YOU", "sendMessage: $message")
     }
@@ -317,6 +334,43 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
         viewModelScope.launch {
             RetrofitInstance.apiService.markAsRead(roomId, "Token $token")
         }
+    }
+
+
+    // Add to WebSocketManager class
+    private val heartbeatJob = AtomicReference<Job?>(null)
+
+//    fun startHeartbeat() {
+//        stopHeartbeat() // Cancel any existing heartbeat
+//
+//        heartbeatJob.set(viewModelScope.launch(Dispatchers.IO) {
+//            while (webSocketManager.isConnected.value) {
+//                try {
+//                    delay(25_000L)
+//                    webSocketManager.sendMessage("",em)
+//                    Log.d("Heartbeat", "Ping sent")
+//                } catch (e: Exception) {
+//                    Log.e("Heartbeat", "Failed: ${e.message}")
+//                    break
+//                }
+//            }
+//        })
+//    }
+
+//    fun stopHeartbeat() {
+//        heartbeatJob.get()?.cancel()
+//    }
+
+
+
+
+    private val _messageToReply = mutableStateOf<oldChatMessage?>(null)
+    val messageToReply = _messageToReply
+
+
+
+    fun setMessageToReply(message: oldChatMessage?) {
+        _messageToReply.value = message
     }
 
 
