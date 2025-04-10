@@ -15,5 +15,6 @@ data class chatMessages(
     val action: String?,
     var reactions: Reactions?,
     val new_content: String?,
-    var is_typing: Boolean?
+    var is_typing: Boolean?,
+    var parent_message: parent_message?
 )

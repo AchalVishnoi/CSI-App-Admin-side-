@@ -1,6 +1,7 @@
 package com.example.csiappcompose.pages.HomePage
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.net.Uri
 import android.widget.Toast
@@ -80,13 +81,27 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.Calendar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 
+@SuppressLint("ContextCastToActivity")
 @Preview
 @Composable
 fun CreateEvent() {
     val context = LocalContext.current
     val viewModel: HomePageViewModel = viewModel(factory = HomePageViewModelFactory(context))
+
+
+    val activity = (LocalContext.current as? Activity)
+
+
+    // Handle back navigation for both cases
+    LaunchedEffect(viewModel.successMessage.value) {
+        if (viewModel.successMessage.value == true) {
+            activity?.finish()
+            viewModel.successMessage.value = false // Reset the flag
+        }
+    }
 
     // State variables
     val name = remember { mutableStateOf("") }
@@ -133,7 +148,7 @@ fun CreateEvent() {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                IconButton(onClick = { /* Handle back navigation */ }) {
+                IconButton(onClick = { activity?.finish()  }) {
                     Icon(
                         painter = painterResource(id = R.drawable.back_arrow),
                         contentDescription = "Back",
@@ -335,7 +350,7 @@ fun CreateEvent() {
                             registrationStartDate = registrationStartDate.value,
                             registrationEndDate = registrationEndDate.value,
                             eventDate = eventDate.value,
-                            status = if (comingSoon.value) "coming_soon" else "ongoing",
+                            status = if (comingSoon.value) "upcoming" else "ongoing",
                             isRegistrationsOpen = isRegistrationsOpen.value,
                             paymentRequired = paymentRequired.value,
                             amount = amountText.value.toIntOrNull() ?: 0,

@@ -47,14 +47,12 @@ import com.example.csiappcompose.viewModels.AuthViewModel
 class LoginScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent{
+        setContent {
             val authViewModel: AuthViewModel = viewModel()
             LoginScreenFun(authViewModel)
 
             val loginResult by authViewModel.loginResult.collectAsState()
             val isLoading by authViewModel.isLoading.collectAsState()
-
-
 
             LaunchedEffect(loginResult) {
                 loginResult?.let { result ->
@@ -62,7 +60,10 @@ class LoginScreen : AppCompatActivity() {
                         val intent = Intent(
                             this@LoginScreen,
                             if (message == "complete details") MainActivity::class.java else FillYourDetail::class.java
-                        )
+                        ).apply {
+                            // Clear the back stack
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
                         startActivity(intent)
                         finish()
                     }
@@ -71,9 +72,7 @@ class LoginScreen : AppCompatActivity() {
                         Toast.makeText(this@LoginScreen, "Login Failed: ${it.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
-
             }
-
         }
     }
 }
@@ -199,9 +198,9 @@ fun LoginScreenFun(authViewModel: AuthViewModel= viewModel()) {
                     .padding(horizontal = 17.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = primary,
-                    disabledContainerColor = primary.copy(alpha = 0.1f),
+                    disabledContainerColor = primary.copy(alpha = 0.5f),
                     contentColor = Color.White,  // Enabled text color
-                    disabledContentColor = Color.White.copy(alpha = 0.5f)
+                    disabledContentColor = Color.White.copy(alpha = 0.5f)  // Disabled text color
                 ),
                 enabled = isFormValid && !isLoading
             ) {

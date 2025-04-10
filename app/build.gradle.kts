@@ -144,6 +144,7 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-extended:<version>")
 
     implementation ("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation ("androidx.compose.foundation:foundation:1.4.0")
 
 
 

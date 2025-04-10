@@ -35,20 +35,31 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val _resetPasswordResult = MutableStateFlow<Result<String>?>(null)
     val resetPasswordResult: StateFlow<Result<String>?> = _resetPasswordResult
 
-
-
-
-
-
-
-
+    private val _detailsComplete = MutableStateFlow<Boolean?>(null)
+    val detailsComplete: StateFlow<Boolean?> = _detailsComplete
 
     init {
         viewModelScope.launch {
+
             DataStoreManager.getToken(context).collect { savedToken ->
+                Log.i("DATA MANAGER", "saved token= $savedToken")
                 _token.value = savedToken
             }
+
+
+
         }
+    }
+
+
+    init {
+        viewModelScope.launch{
+            DataStoreManager.getCompleteDetailsStatus(context).collect { status ->
+                Log.i("DATA MANAGER", "complete details status= $status")
+                _detailsComplete.value = status
+            }
+        }
+
     }
 
     fun loginUser(email: String, password: String) {
@@ -61,18 +72,27 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
                 val response = apiService.login(request)
                 Log.d("API_RESPONSE", "Code: ${response.code()} Body: ${response.body()?.token}")
+
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     if (!token.isNullOrEmpty()) {
                         saveToken(token)
-                        _loginResult.value = Result.success(if(response.body()?.is_completed==true) "complete details" else "not complete details")
+
+                        val isComplete = response.body()?.is_completed == true
+                        _loginResult.value = Result.success(
+                            if (isComplete) "complete details" else "not complete details"
+                        )
 
 
+                        DataStoreManager.saveCompleteDetailsStatus(context, isComplete)
+                        Log.i("DATA MANAGER", "saving status= $isComplete")
                     } else {
                         _loginResult.value = Result.failure(Exception("Invalid Token"))
                     }
                 } else {
-                    _loginResult.value = Result.failure(Exception(response.errorBody()?.string() ?: "Invalid Credentials"))
+                    _loginResult.value = Result.failure(
+                        Exception(response.errorBody()?.string() ?: "Invalid Credentials")
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Exception: ${e.message}")
@@ -82,7 +102,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
 
 
    // logout
@@ -201,7 +220,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
+    fun saveCompleteDetailsStatus(detailCompletedStatus: Boolean) {
+        viewModelScope.launch {
+            DataStoreManager.saveCompleteDetailsStatus(context, detailCompletedStatus)
+        }
+    }
 
 
 

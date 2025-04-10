@@ -1,3 +1,4 @@
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -637,6 +638,7 @@ fun announcementsItem(
 
 
 
+@SuppressLint("SuspiciousIndentation")
 @Preview
 @Composable
 fun AttendanceCard(viewModel: AttendanceViewModel = viewModel()) {
@@ -653,14 +655,15 @@ fun AttendanceCard(viewModel: AttendanceViewModel = viewModel()) {
         val day = "Mon"
         val date = "28"
         val status = "Present"
-           Row {
-               Days(day,date ,status)
-               Days(day,date ,status)
-               Days(day,date ,status)
-               Days(day,date ,status)
-               Days(day,date ,status)
-               Days(day,date ,status)
-               Days(day,date ,status)
+           LazyRow{
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,"Abscent")}
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,"Abscent")}
+             item{ Days(day,date ,status)}
+
            }
 
             Spacer(modifier = Modifier.height(20.dp))

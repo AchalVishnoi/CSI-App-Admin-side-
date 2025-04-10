@@ -164,7 +164,7 @@ interface ApiService {
         @Part gallery: List<MultipartBody.Part>?
     ): Response<createEvent>
 
-    @GET("api/attendance") // change the endpoint to the correct one
+    @GET("api/attendance")
     suspend fun getAttendance(): List<AttendanceDay>
 
 
