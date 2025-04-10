@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import coil.compose.AsyncImage
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,10 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,13 +32,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -57,18 +52,25 @@ import com.example.csiappcompose.R
 import com.example.csiappcompose.dataModelsResponse.DomainX
 import com.example.csiappcompose.dataModelsResponse.profileData
 import com.example.csiappcompose.pages.Chat.ProfileImage
-import com.example.csiappcompose.viewModels.HomePageViewModel
-import com.example.csiappcompose.viewModels.HomePageViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
+import com.example.csiappcompose.viewModels.ProfilePageViewModel
+import com.example.csiappcompose.viewModels.ProfilePageViewModelFactory
 
 
 @Composable
 fun ProfilePage() {
 
     val context = LocalContext.current
-    val viewModel: HomePageViewModel = viewModel(factory = HomePageViewModelFactory(context))
+    val viewModel: ProfilePageViewModel = viewModel(factory = ProfilePageViewModelFactory(context))
+
+    val tokenState = viewModel.token.collectAsState(initial = "")
+    val token = tokenState.value
 
     var profile = viewModel.profilePage.observeAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchToken()
+    }
 
     when (val response = profile.value) {
         is NetWorkResponse.Error -> {
@@ -84,8 +86,7 @@ fun ProfilePage() {
             ShimmerEffect(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-                    .height(200.dp)
+                    .fillMaxSize()
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.Gray)
             )

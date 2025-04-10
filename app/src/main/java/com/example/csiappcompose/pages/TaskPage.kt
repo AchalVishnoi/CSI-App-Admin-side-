@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,14 +38,22 @@ import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
 import com.example.csiappcompose.viewModels.HomePageViewModel
 import com.example.csiappcompose.viewModels.HomePageViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
+import com.example.csiappcompose.viewModels.TaskPageViewModel
+import com.example.csiappcompose.viewModels.TaskPageViewModelFactory
 
 @Preview
 @Composable
 fun TaskPage(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val viewModel: HomePageViewModel = viewModel(factory = HomePageViewModelFactory(context))
+    val viewModel: TaskPageViewModel = viewModel(factory = TaskPageViewModelFactory(context))
+    val tokenState = viewModel.token.collectAsState(initial = "")
+    val token = tokenState.value
 
     val task = viewModel.taskPage.observeAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchToken()
+    }
 
     when (val response = task.value) {
         is NetWorkResponse.Error -> {

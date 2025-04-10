@@ -54,9 +54,9 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
     private val _profilePage= MutableLiveData< NetWorkResponse<profileData>>()
     val profilePage: LiveData< NetWorkResponse<profileData>> = _profilePage
-
-    private val _taskPage= MutableLiveData< NetWorkResponse<TaskData>>()
-    val taskPage: LiveData< NetWorkResponse<TaskData>> = _taskPage
+//
+//    private val _taskPage= MutableLiveData< NetWorkResponse<TaskData>>()
+//    val taskPage: LiveData< NetWorkResponse<TaskData>> = _taskPage
 
 
     fun fetchToken(){
@@ -65,8 +65,6 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
         _announcements.value= NetWorkResponse.Loading
         _ongoingEvents.value= NetWorkResponse.Loading
         _upcomingEvents.value= NetWorkResponse.Loading
-        _profilePage.value=NetWorkResponse.Loading
-        _taskPage.value=NetWorkResponse.Loading
 
         viewModelScope.launch{
 
@@ -77,7 +75,6 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                     getAnnouncements(savedToken)
                     getEvents(savedToken)
                     getProfile(savedToken)
-                    getTask(savedToken)
 
                 }
                 else{
@@ -85,8 +82,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                     _announcements.value= NetWorkResponse.Error("failed to load data")
                     _ongoingEvents.value= NetWorkResponse.Error("failed to load data")
                     _upcomingEvents.value= NetWorkResponse.Error("failed to load data")
-                    _profilePage.value=NetWorkResponse.Error("failed to load data")
-                    _taskPage.value=NetWorkResponse.Error("failed to load data")
+                    _profilePage.value= NetWorkResponse.Error("failed to load data")
                 }
             }
 
@@ -121,35 +117,35 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
         }
 
     }
+//
+//    fun getTask( token:String){
+//
+//
+//        viewModelScope.launch{
+//            val response = RetrofitInstance.apiService.task("Token $token")
+//
+//            Log.d("API_REQUEST", "Request: Token $token")
+//
+//
+//            Log.d("API_RESPONSE", "Code: ${response.code()} Body: ${response.body()}")
+//
+//            try{
+//                if(response.isSuccessful){
+//                    response.body()?.let {
+//                        _taskPage.value= NetWorkResponse.Success(it)
+//                    }
+//                }
+//                else{
+//                    _taskPage.value= NetWorkResponse.Error("failed to load data")
+//                }
+//            }
+//            catch (e: Exception){
+//                _taskPage.value= NetWorkResponse.Error("failed to load data")
+//            }
+//
+//        }
 
-    fun getTask( token:String){
-
-
-        viewModelScope.launch{
-            val response = RetrofitInstance.apiService.task("Token $token")
-
-            Log.d("API_REQUEST", "Request: Token $token")
-
-
-            Log.d("API_RESPONSE", "Code: ${response.code()} Body: ${response.body()}")
-
-            try{
-                if(response.isSuccessful){
-                    response.body()?.let {
-                        _taskPage.value= NetWorkResponse.Success(it)
-                    }
-                }
-                else{
-                    _taskPage.value= NetWorkResponse.Error("failed to load data")
-                }
-            }
-            catch (e: Exception){
-                _taskPage.value= NetWorkResponse.Error("failed to load data")
-            }
-
-        }
-
-    }
+  //  }
 
 
 

@@ -43,3 +43,26 @@ class HomePageViewModelFactory(private val context: Context): ViewModelProvider.
     }
 }
 
+
+class TaskPageViewModelFactory(private val context: Context): ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TaskPageViewModel::class.java))
+            return TaskPageViewModel(context) as T
+
+
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
+class ProfilePageViewModelFactory(private val context: Context): ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ProfilePageViewModel::class.java))
+            return ProfilePageViewModel(context) as T
+
+
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
