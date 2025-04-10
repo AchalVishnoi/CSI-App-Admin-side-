@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,7 +60,6 @@ fun TaskPage(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
-                    .height(200.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.Gray)
             )
@@ -86,7 +86,7 @@ fun TaskPage(modifier: Modifier = Modifier) {
 @Composable
 fun taskUi(
     completed: List<Completed> = listOf(
-        Completed("attachment", "75", "abouttask", "endDate", listOf(Group(
+        Completed("attachment", 57.0f, "abouttask", "endDate", listOf(Group(
             1, listOf(Member("domain", "name", 1)), "name")), 1, "informationUrl", "startingDate", "status", "Title")
     ),
     pending: List<Pending> = listOf(
@@ -109,7 +109,7 @@ fun taskUi(
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
                 Button(
@@ -149,6 +149,7 @@ fun TaskSection1(title: String, tasks: List<Current>) {
                 text = title,
                 fontSize = 24.sp,
                 color = Color.Black,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(16.dp)
             )
             Icon(
@@ -181,6 +182,7 @@ fun TaskSection2(title: String, tasks: List<Pending>) {
                 text = title,
                 fontSize = 24.sp,
                 color = Color.Black,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(16.dp)
             )
             Icon(
@@ -213,6 +215,7 @@ fun TaskSection3(title: String, tasks: List<Completed>) {
                 text = title,
                 fontSize = 24.sp,
                 color = Color.Black,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(16.dp)
             )
             Icon(
@@ -243,7 +246,7 @@ fun TaskItem1(task: Current) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(10.dp)
             .width(180.dp)
             .height(180.dp)
             .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
@@ -253,19 +256,28 @@ fun TaskItem1(task: Current) {
                         putExtra("date", task.start_date)
                         putExtra("name", task.title)
                         putExtra("progress", task.current_progress)
+                        putExtra("description", task.description)
+                        task.attachment?.let {
+                            putExtra("attachment", it.toString())
+                        }
+                        putExtra("group", task.groups.joinToString { it.name })
                     }
                     ctx.startActivity(intent) // ✅ Starting activity with context
                 }
             },// Border with rounded corners
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
+            modifier = Modifier.fillMaxSize().background(color = Color.White).padding(8.dp)
             ,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = task.end_date, fontSize = 12.sp, color = Color.Black)
-            Text(text = task.title, fontSize = 26.sp,color = Color.Red, fontWeight = FontWeight.Bold)
+            Text(text = task.start_date, fontSize = 12.sp, color = Color.Black)
+            Text(text = task.title, fontSize = 20.sp,
+                color = Color.Red,
+                fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                  overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(38.dp))
             LinearProgressIndicator(
                 progress = task.current_progress / 100f, // Convert percentage to float value (0-1)
@@ -292,7 +304,7 @@ fun TaskItem2(task: Pending) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(10.dp)
             .width(180.dp)
             .height(180.dp)
             .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
@@ -302,19 +314,26 @@ fun TaskItem2(task: Pending) {
                         putExtra("date", task.start_date)
                         putExtra("name", task.title)
                         putExtra("progress", task.current_progress)
+                        putExtra("description", task.description)
+                        task.attachment?.let {
+                            putExtra("attachment", it.toString())
+                        }
+                        putExtra("group", task.groups.joinToString { it.name })
                     }
                     ctx.startActivity(intent) // ✅ Starting activity with context
                 }
             },// Border with rounded corners
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
+            modifier = Modifier.fillMaxSize().background(color = Color.White).padding(8.dp)
             ,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = task.end_date, fontSize = 12.sp, color = Color.Black)
-            Text(text = task.title, fontSize = 26.sp,color = Color.Red, fontWeight = FontWeight.Bold)
+            Text(text = task.start_date, fontSize = 12.sp, color = Color.Black)
+            Text(text = task.title, fontSize = 20.sp,color = Color.Red, fontWeight = FontWeight.Bold
+                   , maxLines = 1,
+                overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(38.dp))
             LinearProgressIndicator(
                 progress = {
@@ -342,7 +361,7 @@ fun TaskItem3(task: Completed) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(10.dp)
             .width(180.dp)
             .height(180.dp)
             .border(1.5.dp, Color.Blue, shape = RoundedCornerShape(16.dp))
@@ -352,22 +371,38 @@ fun TaskItem3(task: Completed) {
                         putExtra("date", task.start_date)
                         putExtra("name", task.title)
                         putExtra("progress", task.current_progress)
+                        putExtra("description", task.description)
+                        task.attachment?.let {
+                            putExtra("attachment", it.toString())
+                        }
+                        putExtra("group", task.groups.joinToString { it.name })
                     }
                     ctx.startActivity(intent) // ✅ Starting activity with context
                 }
             },// Border with rounded corners
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(color = PrimaryBackgroundColor)
+            modifier = Modifier.fillMaxSize().background(color = Color.White).padding(8.dp)
             ,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = task.end_date, fontSize = 12.sp, color = Color.Black)
-            Text(text = task.title, fontSize = 26.sp,color = Color.Red, fontWeight = FontWeight.Bold)
+            Text(text = task.start_date, fontSize = 12.sp, color = Color.Black)
+            Text(text = task.title, fontSize = 20.sp,color = Color.Red, fontWeight = FontWeight.Bold
+                , maxLines = 1,
+                overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(38.dp))
 
             // Progress Text
+            LinearProgressIndicator(
+                progress = { task.current_progress / 100f }, // Convert percentage to float value (0-1)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .padding(8.dp,0.dp,8.dp,0.dp),
+                color = Color.Blue,
+
+                )
             Text(
                 text = "Progress: ${task.current_progress}",
                 fontSize = 12.sp,

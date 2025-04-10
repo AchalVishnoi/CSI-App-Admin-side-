@@ -373,9 +373,8 @@ fun groupListItem(navController: NavHostController, groupListItem: GroupListItem
                                text = "${lastMessage}",
                                fontSize = 13.sp,
                                color = Color(0xFF6F6F6F),
-                               maxLines = 1,
                                modifier = Modifier.weight(2f),
-
+                               maxLines = 1,
                                overflow = TextOverflow.Ellipsis
                            )
 

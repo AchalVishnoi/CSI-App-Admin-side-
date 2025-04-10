@@ -346,7 +346,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
     fun submitProfileDetails(
         branch: String,
-        domain: String,
+        domain: Int,
         dob: String,
         linkedinUrl: String,
         bio: String,
@@ -386,7 +386,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                         Toast.makeText(context, profileSuccessMessage.value, Toast.LENGTH_LONG).show()
                         Log.i("PROFILE", "submitProfileDetails: Profile updated")
 
-                        onSuccess() // ✅ success callback triggered
+                        onSuccess()
                     } else {
                         val errorBody = response.errorBody()?.string()
                         profileErrorMessage.value = errorBody ?: "Failed to submit profile"

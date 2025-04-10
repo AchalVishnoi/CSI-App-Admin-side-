@@ -2,7 +2,7 @@ package com.example.csiappcompose.dataModelsResponseTask
 
 data class Completed(
     val attachment: String,
-    val current_progress: String,
+    val current_progress: Float,
     val description: String,
     val end_date: String,
     val groups:List<Group>,
