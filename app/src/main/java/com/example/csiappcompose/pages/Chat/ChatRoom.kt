@@ -560,7 +560,7 @@ fun RoomMessageRow(
                         if (!isModel && showImage){
 
                             Text(
-                                text = "~${it.sender.first_name} ${it.sender.last_name}",
+                                text = "~${it.sender.first_name}"+if(it.sender.last_name!=null) "  ${it.sender.last_name}" else "",
                                 fontWeight = FontWeight.Bold,
                                 color = primary
                             )
@@ -1078,19 +1078,20 @@ fun ReplyPreviewMini(
                     Icon(
                         imageVector = Icons.Default.Reply,
                         contentDescription = "Replying to",
-                        tint = if (isUserMessage) Color.White else Color.Gray,
+                        tint = if (isUserMessage) Color.LightGray else Color.Gray,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "${repliedMessage.sender?.name}",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = if (isUserMessage) Color.LightGray else Color.Gray,
                     )
 
                 }
                 Text(
                     text = repliedMessage.content.take(30) + if (repliedMessage.content.length > 30) "..." else "",
-                    color =  Color.LightGray,
+                    color =  if (isUserMessage) Color.LightGray else Color.Gray,
                     fontSize = 12.sp,
                     maxLines = 1
                 )

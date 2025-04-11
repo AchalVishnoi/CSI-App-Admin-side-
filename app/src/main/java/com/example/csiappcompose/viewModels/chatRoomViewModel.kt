@@ -207,7 +207,8 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
             is_deleted = false,
             is_edited = false,
             mentions = mentionList,
-            parent_message = parent_message(
+            parent_message = if(messageToReply.value!=null)
+                parent_message(
                 content = messageToReply.value?.content.toString(),
                 id=messageToReply.value?.id,
                 created_at = messageToReply.value?.created_at,
@@ -215,7 +216,8 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
                     id =messageToReply.value?.sender?.id,
                     name = messageToReply.value?.sender?.first_name.toString(),
                     photo = messageToReply.value?.sender?.photo.toString())
-                   ),
+                   )
+            else null,
             reactions = null,
             sendingStatus = "sending",
             updated_at = null,

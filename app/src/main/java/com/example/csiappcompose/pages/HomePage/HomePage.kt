@@ -97,180 +97,191 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
 
 
 
-            Spacer(modifier= Modifier.height(70.dp))
+                Spacer(modifier= Modifier.height(70.dp))
 
 
 
 
             //upper section
 
-            when (val response = homePageStats.value) {
-                is NetWorkResponse.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "Failed to load data: ${response.message}", color = Color.Red)
+                when (val response = homePageStats.value) {
+                    is NetWorkResponse.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "Failed to load data: ${response.message}", color = Color.Red)
+                        }
+                    }
+
+                    is NetWorkResponse.Loading -> {
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color.Gray)
+                        )
+                    }
+
+                    is NetWorkResponse.Success -> {
+                        val homePageStatsValue = response.data
+                        upperView(
+                            name = homePageStatsValue.name,
+                            chatCnt = homePageStatsValue.chat_groups_with_unread,
+                            announcmentCnt = homePageStatsValue.announcement_count,
+                            taskCnt = homePageStatsValue.tasks_assigned,
+                            photo = homePageStatsValue.photo,
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        )
+                    }
+
+                    else -> {
+                        Text(text = "Unexpected state", color = Color.Gray)
                     }
                 }
 
-                is NetWorkResponse.Loading -> {
-                    ShimmerEffect(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Color.Gray)
-                    )
-                }
-
-                is NetWorkResponse.Success -> {
-                    val homePageStatsValue = response.data
-                    upperView(
-                        name = homePageStatsValue.name,
-                        chatCnt = homePageStatsValue.chat_groups_with_unread,
-                        announcmentCnt = homePageStatsValue.announcement_count,
-                        taskCnt = homePageStatsValue.tasks_assigned,
-                        photo = homePageStatsValue.photo,
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
-                }
-
-                else -> {
-                    Text(text = "Unexpected state", color = Color.Gray)
-                }
-            }
-
-            //announcment section
+         //announcment section
             when(val response=announcmentsList.value){
 
-                is NetWorkResponse.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Failed to load data: ${response.message}",
-                            color = Color.Red
-                        )
+                    is NetWorkResponse.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Failed to load data: ${response.message}",
+                                color = Color.Red
+                            )
+                        }
                     }
-                }
 
-                is NetWorkResponse.Loading -> {
+                    is NetWorkResponse.Loading -> {
 
-                    Row {
+                        Row {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .weight(2f)
+                                    .height(50.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .size(50.dp)
+                                    .background(Color.Gray)
+                            )
+                        }
+
                         ShimmerEffect(
                             modifier = Modifier
                                 .padding(horizontal = 20.dp)
-                                .weight(2f)
-                                .height(50.dp)
+                                .fillMaxWidth()
+                                .height(200.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Color.Gray)
-                        )
-                        ShimmerEffect(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .weight(1f)
-                                .clip(RoundedCornerShape(10.dp))
-                                .size(50.dp)
                                 .background(Color.Gray)
                         )
                     }
 
-                    ShimmerEffect(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Color.Gray)
-                    )
-                }
+                    is NetWorkResponse.Success -> {
 
-                is NetWorkResponse.Success -> {
+                        val response = response.data
 
-                    val response = response.data
-                    if(response.isNotEmpty()){
-                        Column(modifier = Modifier.fillMaxWidth().background(color = PrimaryBackgroundColor)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
+                            Column(modifier = Modifier.fillMaxWidth().background(color = PrimaryBackgroundColor)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
 
-                                Row (verticalAlignment = Alignment.CenterVertically){
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.announcment_icon),
-                                        contentDescription = "add announcement",
-                                        modifier = Modifier.padding(start = 20.dp).size(20.dp)
-                                    )
+                                    Row (verticalAlignment = Alignment.CenterVertically){
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.announcment_icon),
+                                            contentDescription = "add announcement",
+                                            modifier = Modifier.padding(start = 20.dp).size(20.dp)
+                                        )
 
-                                    Text(
-                                        text = "Announcements",
-                                        fontSize = 20.sp,
-                                        color = Color.Black,
-                                        modifier = Modifier.padding(16.dp)
-                                    )
-                                }
-                                when (val response = homePageStats.value) {
-                                    is NetWorkResponse.Error -> { }
-
-                                    is NetWorkResponse.Loading -> {
-                                        ShimmerEffect(
-                                            modifier = Modifier
-                                                .padding(horizontal = 20.dp)
-                                                .weight(1f)
-                                                .clip(RoundedCornerShape(10.dp))
-                                                .size(50.dp)
-                                                .background(Color.LightGray)
+                                        Text(
+                                            text = "Announcements",
+                                            fontSize = 20.sp,
+                                            color = Color.Black,
+                                            modifier = Modifier.padding(16.dp)
                                         )
                                     }
+                                    when (val response = homePageStats.value) {
+                                        is NetWorkResponse.Error -> { }
 
-                                    is NetWorkResponse.Success -> {
-                                        val homePageStatsValue = response.data
-                                        if(homePageStatsValue.year!="2nd"){
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.add_icon),
-                                                contentDescription = "add announcement",
-                                                modifier = Modifier.padding(end = 20.dp).size(25.dp)
+                                        is NetWorkResponse.Loading -> {
+                                            ShimmerEffect(
+                                                modifier = Modifier
+                                                    .padding(horizontal = 20.dp)
+                                                    .weight(1f)
+                                                    .clip(RoundedCornerShape(10.dp))
+                                                    .size(50.dp)
+                                                    .background(Color.LightGray)
                                             )
                                         }
 
+                                        is NetWorkResponse.Success -> {
+                                            val homePageStatsValue = response.data
+                                            if(homePageStatsValue.year!="2nd"){
+
+
+                                                IconButton(
+                                                    onClick = {}
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.add_icon),
+                                                        contentDescription = "add announcement",
+                                                        modifier = Modifier.padding(end = 20.dp).size(25.dp)
+                                                    )
+                                                }
+
+
+
+                                                }
+
+                                        }
+
+                                        else -> {
+                                            Text(text = "Unexpected state", color = Color.Gray)
+                                        }
                                     }
 
-                                    else -> {
-                                        Text(text = "Unexpected state", color = Color.Gray)
-                                    }
+
+
+
+
+
+
+
+
+
                                 }
 
+                                if(response.isNotEmpty()){
 
-
-
-
-
+                                annuncements(announcmentsList=response)
 
 
 
 
                             }
-
-                            annuncements(announcmentsList=response)
-
-
-
-
                         }
+
                     }
 
-                }
-
-                else -> {
-                    Text(text = "Unexpected state", color = Color.Gray)
-                }
+                    else -> {
+                        Text(text = "Unexpected state", color = Color.Gray)
+                    }
             }
 
 
@@ -303,8 +314,8 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
                                 .size(50.dp)
                                 .background(Color.Gray)
                         )
-
-
+                       
+                       
                         ShimmerEffect(
                             modifier = Modifier
                                 .padding(horizontal = 20.dp)
@@ -316,7 +327,7 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
 
                     }
 
-
+                    
                 }
 
                 is NetWorkResponse.Success -> {
@@ -357,7 +368,7 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
 
                             }
 
-                        }
+                          }
                     }
 
                 }
@@ -367,7 +378,7 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
             }
 
 
-            Events(ongoing = ongoingEvents, upcoming = upcomingEvent, homeStat = homePageStats, selected = selected)
+          Events(ongoing = ongoingEvents, upcoming = upcomingEvent, homeStat = homePageStats, selected = selected)
 
 
 
@@ -375,16 +386,16 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
 
 
             Spacer(modifier= Modifier.height(140.dp))
+         }
+
+
+
+
+
+
+
         }
-
-
-
-
-
-
-
     }
-}
 
 
 
@@ -403,7 +414,7 @@ fun upperView(
 
 
 
-    ) {
+) {
     Card(
         modifier = modifier
 
@@ -412,9 +423,9 @@ fun upperView(
         Box(modifier = Modifier.fillMaxSize()
             .background(color = Color((0xFF0032CD)))
             .padding(start=15.dp),
-
+            
             contentAlignment = Alignment.Center
-        ){
+            ){
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -423,21 +434,21 @@ fun upperView(
 
                 Column{
 
-                    Row{
-                        Text(
-                            text = "Hey, ",
-                            color = Color.White,
-                            fontWeight = FontWeight.W300,
-                            fontSize = 20.sp
-                        )
-                        Text(
-                            text = "$name",
-                            color = Color.White,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 20.sp
-                        )
+                  Row{
+                      Text(
+                          text = "Hey, ",
+                          color = Color.White,
+                          fontWeight = FontWeight.W300,
+                          fontSize = 20.sp
+                       )
+                      Text(
+                          text = "$name",
+                          color = Color.White,
+                          fontWeight = FontWeight.W600,
+                          fontSize = 20.sp
+                      )
 
-                    }
+                  }
                     Text(
                         text = "Good Morning",
                         color = Color.White,
@@ -453,7 +464,7 @@ fun upperView(
                         modifier = Modifier
                             .width(152.dp)
                             .height(37.dp)
-                        ,
+                            ,
                         colors = CardDefaults.cardColors(containerColor = Color.White) // White background for the Card
                     ) {
                         Row (modifier = Modifier.fillMaxSize(),
@@ -464,7 +475,7 @@ fun upperView(
                                 //navController?.navigate("chat_room")
                             }
                             badgeBox(R.drawable.task_icon, taskCnt,"task"){
-                                // navController?.navigate("task")
+                               // navController?.navigate("task")
                             }
                             badgeBox(R.drawable.announcment_icon,announcmentCnt ,"announcement"){}
                         }
@@ -517,31 +528,31 @@ fun upperView(
 }
 
 
-@Composable
-fun badgeBox(icon:Int,cnt:Int,content: String, onClick:()-> Unit){
-    BadgedBox(
-        badge = {
-            if (cnt > 0) {
-                Badge(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
-                ) {
-                    Text("$cnt")
-                }
-            }
-        }
-    ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = content,
-            modifier = Modifier.size(25.dp)
-                .clickable(
-                    onClick = onClick
-                ),
-        )
-    }
+ @Composable
+  fun badgeBox(icon:Int,cnt:Int,content: String, onClick:()-> Unit){
+      BadgedBox(
+          badge = {
+              if (cnt > 0) {
+                  Badge(
+                      containerColor = Color.Red,
+                      contentColor = Color.White
+                  ) {
+                      Text("$cnt")
+                  }
+              }
+          }
+      ) {
+          Icon(
+              painter = painterResource(id = icon),
+              contentDescription = content,
+              modifier = Modifier.size(25.dp)
+                  .clickable(
+                      onClick = onClick
+                  ),
+          )
+      }
 
-}
+  }
 
 
 var announcemnts=listOf(
@@ -562,16 +573,16 @@ fun annuncements(modifier: Modifier = Modifier
     .heightIn(max = 400.dp)
     .padding(5.dp),
 
-                 announcmentsList:List<announcmentDisplay> =announcemnts){
+    announcmentsList:List<announcmentDisplay> =announcemnts){
 
     val scrollState = rememberLazyListState()
 
-    Card(modifier = modifier.clip(RoundedCornerShape(16.dp)),
+   Card(modifier = modifier.clip(RoundedCornerShape(16.dp)),
 
 
-        shape = RoundedCornerShape(16.dp), // Add rounded corners
+    shape = RoundedCornerShape(16.dp),
 
-    ) {
+ ) {
 
         LazyColumn(modifier = Modifier
             .fillMaxWidth()
@@ -590,8 +601,8 @@ fun annuncements(modifier: Modifier = Modifier
 
 
 
-        }
     }
+}
 
 
 
@@ -607,22 +618,22 @@ fun announcementsItem(
         .background(color = Color.White)
         .padding(top = 8.dp,  start = 8.dp, end = 8.dp),
     announcmentDisplay: announcmentDisplay= announcmentDisplay("hello every one,\n today is meeting, every one must present ", "Task","Rishi","2025-03-19 16:53"),
-){
+   ){
 
     Column(modifier=modifier){
-        Text(
-            text="${announcmentDisplay.time_date} ${announcmentDisplay.related_to_display} From: ${announcmentDisplay.sender_first_name}",
-            color = Color.DarkGray,
-            fontSize = 12.sp
-        )
+            Text(
+                text="${announcmentDisplay.time_date} ${announcmentDisplay.related_to_display} From: ${announcmentDisplay.sender_first_name}",
+                color = Color.DarkGray,
+                fontSize = 12.sp
+            )
 
         Spacer(modifier= Modifier.height(10.dp))
-
+        
         Text(
-            text="\"${announcmentDisplay.message}\"",
-            color = Color.Black,
+                text="\"${announcmentDisplay.message}\"",
+                color = Color.Black,
             fontSize = 16.sp
-        )
+            )
 
         Spacer(modifier= Modifier.height(20.dp))
 
@@ -655,38 +666,38 @@ fun AttendanceCard(viewModel: AttendanceViewModel = viewModel()) {
         val day = "Mon"
         val date = "28"
         val status = "Present"
-        LazyRow{
-            item{ Days(day,date ,status)}
-            item{ Days(day,date ,status)}
-            item{ Days(day,date ,status)}
-            item{ Days(day,date ,"Abscent")}
-            item{ Days(day,date ,status)}
-            item{ Days(day,date ,"Abscent")}
-            item{ Days(day,date ,status)}
+           LazyRow{
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,"Abscent")}
+             item{ Days(day,date ,status)}
+             item{ Days(day,date ,"Abscent")}
+             item{ Days(day,date ,status)}
 
-        }
+           }
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
 
-        Button(
-            onClick = {
+            Button(
+                onClick = {
                 /* TODO: Trigger attendance API */
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005EFF))
-        ) {
-            Text("Mark Attendance", color = Color.White)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005EFF))
+            ) {
+                Text("Mark Attendance", color = Color.White)
+            }
         }
-    }
 
 }
 @Composable
 fun Days(
-    day:String,date:String,status:String
+day:String,date:String,status:String
 ){
     Card(
         modifier = Modifier
@@ -741,7 +752,7 @@ fun Events(
 
 
 
-    val context=LocalContext.current
+val context=LocalContext.current
 
 
 
@@ -818,7 +829,7 @@ fun Events(
 
                     }
                 }
-
+                
                 else->{}
 
             }
@@ -865,15 +876,15 @@ fun Events(
                             items(4) {
 
 
-                                ShimmerEffect(
-                                    modifier = Modifier
-                                        .width(200.dp)
-                                        .height(120.dp)
-                                        .padding(10.dp)
-                                        .clip(RoundedCornerShape(16))
-                                        .background(color = Color.Gray)
+                                   ShimmerEffect(
+                                       modifier = Modifier
+                                           .width(200.dp)
+                                           .height(120.dp)
+                                                                                      .padding(10.dp)
+                                           .clip(RoundedCornerShape(16))
+                                           .background(color = Color.Gray)
 
-                                )
+                                   )
 
 
 
@@ -1039,7 +1050,7 @@ fun Events(
 
 
 
-
+            
 
 
 
@@ -1086,7 +1097,7 @@ fun EventItem(
             .height(120.dp)
             .padding(10.dp)
             .clip(RoundedCornerShape(16))
-        ,
+            ,
         shape = RoundedCornerShape(16)
 
     ){
