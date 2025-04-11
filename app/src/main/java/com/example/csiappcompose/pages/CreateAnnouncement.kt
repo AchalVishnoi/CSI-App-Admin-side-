@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.csiappcompose.TopBar
 
 class CreateAnnouncement : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,10 +36,11 @@ class CreateAnnouncement : AppCompatActivity() {
 @Preview
 @Composable
 fun Announcement() {
+
     val yearOptions = listOf("4th Year", "3rd Year", "2nd Year")
     val taskOptions = listOf("CSI app", "Code Compiler", "Event Management")
     val domainOptions = listOf("App Dev", "Frontend", "Backend", "ML", "UI/UX")
-    val memberList = listOf("Aditya", "Ashya", "Sandeep", "Harsh", "Riya")
+    val memberList = listOf("Aditya", "Ashya", "Sandeep", "Harsh", "Sparsh")
 
     val selectedYears = remember { mutableStateListOf<String>() }
     val selectedDomains = remember { mutableStateListOf<String>() }
@@ -47,38 +49,58 @@ fun Announcement() {
 
     val announcementText = remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFEFEFEF))
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        Text(
-            text = "Make an Announcement",
-            fontSize = 20.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+    androidx.compose.material.Scaffold(
+        modifier = Modifier.fillMaxSize().padding(top = 0.dp),
+        topBar = {
+            TopBar()
+        },
+    ) { innerPadding ->
 
-        Text("To", style = MaterialTheme.typography.labelLarge)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFEFEFEF))
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                text = "Make an Announcement",
+                fontSize = 20.sp,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
-        MultiSelectDropdown("Select Years", yearOptions, selectedYears)
-        Spacer(modifier = Modifier.height(16.dp))
-        MultiSelectDropdown("Select Domains", domainOptions, selectedDomains)
-        Spacer(modifier = Modifier.height(16.dp))
-        MultiSelectDropdown("Select Tasks", taskOptions, selectedTasks)
-        Spacer(modifier = Modifier.height(16.dp))
-        MultiSelectDropdown("Select Members", memberList, selectedMembers)
+            Text("To", style = MaterialTheme.typography.labelLarge)
 
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = announcementText.value,
-            onValueChange = { announcementText.value = it },
-            placeholder = { Text("Write an Announcement") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            Spacer(modifier = Modifier.height(8.dp))
+            MultiSelectDropdown("Select Years", yearOptions, selectedYears)
+            Spacer(modifier = Modifier.height(16.dp))
+            MultiSelectDropdown("Select Domains", domainOptions, selectedDomains)
+            Spacer(modifier = Modifier.height(16.dp))
+            MultiSelectDropdown("Select Tasks", taskOptions, selectedTasks)
+            Spacer(modifier = Modifier.height(16.dp))
+            MultiSelectDropdown("Select Members", memberList, selectedMembers)
+
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = announcementText.value,
+                onValueChange = { announcementText.value = it },
+                placeholder = { Text("Write an Announcement") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                   // yha submit krna hai
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text("Submit", color = Color.White)
+            }
+        }
     }
 }
 
@@ -162,6 +184,7 @@ fun MultiSelectDropdown(
         }
     }
 }
+
 
 
 

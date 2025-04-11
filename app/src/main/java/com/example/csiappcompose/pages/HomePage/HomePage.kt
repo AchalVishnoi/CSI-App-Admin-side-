@@ -56,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.csiappcompose.TaskDetailsActivity
+import com.example.csiappcompose.pages.CreateAnnouncement
 import com.example.csiappcompose.pages.HomePage.CreateEvent
 import com.example.csiappcompose.pages.HomePage.CreateEventActivity
 
@@ -203,11 +204,13 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
                                 ) {
 
                                     Row (verticalAlignment = Alignment.CenterVertically){
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.announcment_icon),
-                                            contentDescription = "add announcement",
-                                            modifier = Modifier.padding(start = 20.dp).size(20.dp)
-                                        )
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.task_icon),
+                                                contentDescription = "add announcement",
+                                                modifier = Modifier.padding(start = 20.dp)
+                                                    .size(20.dp),
+
+                                            )
 
                                         Text(
                                             text = "Announcements",
@@ -236,7 +239,16 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
 
 
                                                 IconButton(
-                                                    onClick = {}
+                                                        onClick = {
+                                                            context.let { ctx ->
+                                                                val intent = Intent(
+                                                                    ctx,
+                                                                    CreateAnnouncement()::class.java
+                                                                ).apply {
+                                                                }
+                                                                ctx.startActivity(intent)
+                                                            }
+                                                        }
                                                 ) {
                                                     Icon(
                                                         painter = painterResource(id = R.drawable.add_icon),

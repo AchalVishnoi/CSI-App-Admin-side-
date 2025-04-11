@@ -171,8 +171,8 @@ fun ProfilePage() {
                             ShimmerEffect(
                                 modifier = Modifier
                                     .padding(horizontal = 20.dp)
-                                    .width(100.dp)
-                                    .height(25.dp)
+                                    .width(120.dp)
+                                    .height(30.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray)
                             )
@@ -194,8 +194,8 @@ fun ProfilePage() {
                             ShimmerEffect(
                                 modifier = Modifier
                                     .padding(horizontal = 20.dp)
-                                    .width(50.dp)
-                                    .height(25.dp)
+                                    .width(70.dp)
+                                    .height(30.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray)
                             )
@@ -216,9 +216,9 @@ fun ProfilePage() {
                         is NetWorkResponse.Loading -> {
                             ShimmerEffect(
                                 modifier = Modifier
-                                    .padding(horizontal = 20.dp)
+                                    .padding(horizontal = 10.dp)
                                     .fillMaxWidth()
-                                    .height(35.dp)
+                                    .height(40.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray)
                             )
@@ -238,9 +238,9 @@ fun ProfilePage() {
                         is NetWorkResponse.Loading -> {
                             ShimmerEffect(
                                 modifier = Modifier
-                                    .padding(horizontal = 20.dp)
+                                    .padding(horizontal = 10.dp)
                                     .fillMaxWidth()
-                                    .height(35.dp)
+                                    .height(40.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray)
                             )
@@ -260,9 +260,9 @@ fun ProfilePage() {
                         is NetWorkResponse.Loading -> {
                             ShimmerEffect(
                                 modifier = Modifier
-                                    .padding(horizontal = 20.dp)
+                                    .padding(horizontal = 10.dp)
                                     .fillMaxWidth()
-                                    .height(35.dp)
+                                    .height(40.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray)
                             )
@@ -289,9 +289,19 @@ fun ProfilePage() {
                         is NetWorkResponse.Loading -> {
                             ShimmerEffect(
                                 modifier = Modifier
-                                    .padding(horizontal = 20.dp)
+                                    .padding(horizontal = 10.dp)
+                                    .width(50.dp)
+                                    .height(40.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 10.dp)
                                     .fillMaxWidth()
-                                    .height(35.dp)
+                                    .height(50.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray)
                             )
@@ -317,9 +327,18 @@ fun ProfilePage() {
                         is NetWorkResponse.Loading -> {
                             ShimmerEffect(
                                 modifier = Modifier
-                                    .padding(horizontal = 20.dp)
+                                    .padding(horizontal = 10.dp)
+                                    .width(120.dp)
+                                    .height(40.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 10.dp)
                                     .fillMaxWidth()
-                                    .height(35.dp)
+                                    .height(50.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray)
                             )
