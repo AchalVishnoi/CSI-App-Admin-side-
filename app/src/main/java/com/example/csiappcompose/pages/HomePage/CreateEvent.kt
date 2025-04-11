@@ -29,7 +29,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
@@ -39,7 +38,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -56,7 +54,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Switch
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,21 +65,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.csiappcompose.R
 import com.example.csiappcompose.pages.inputField
-import com.example.csiappcompose.ui.theme.PrimaryBackgroundColor
 import com.example.csiappcompose.ui.theme.lightSkyBlue
 import com.example.csiappcompose.ui.theme.primary
 import com.example.csiappcompose.viewModels.HomePageViewModel
 import com.example.csiappcompose.viewModels.HomePageViewModelFactory
-import com.google.ai.client.generativeai.type.content
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.Calendar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.unit.dp
+import com.example.csiappcompose.TopBar
 
 @SuppressLint("ContextCastToActivity")
 @Preview
@@ -118,279 +111,293 @@ fun CreateEvent() {
     val paymentRequired = remember { mutableStateOf(false) }
     val amountText = remember { mutableStateOf("") }
 
-    // Form validation
-    val isFormValid = remember {
-        derivedStateOf {
-            name.value.isNotBlank() &&
-                    title.value.isNotBlank() &&
-                    description.value.isNotBlank() &&
-                    guidelines.value.isNotBlank() &&
-                    venue.value.isNotBlank() &&
-                    eventDate.value.isNotBlank() &&
-                    (!isRegistrationsOpen.value || (registrationStartDate.value.isNotBlank() && registrationEndDate.value.isNotBlank()))
-        }
-    }
+    androidx.compose.material.Scaffold(
+        modifier = Modifier.fillMaxSize().padding(top = 0.dp),
+        topBar = {
+            TopBar()
+        },
+    ) { innerPadding ->
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(lightSkyBlue)
-    ) {
-        Column(
+
+        // Form validation
+        val isFormValid = remember {
+            derivedStateOf {
+                name.value.isNotBlank() &&
+                        title.value.isNotBlank() &&
+                        description.value.isNotBlank() &&
+                        guidelines.value.isNotBlank() &&
+                        venue.value.isNotBlank() &&
+                        eventDate.value.isNotBlank() &&
+                        (!isRegistrationsOpen.value || (registrationStartDate.value.isNotBlank() && registrationEndDate.value.isNotBlank()))
+            }
+        }
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-                .alpha(if (viewModel.isLoading.value) 0.5f else 1f)
+                .background(lightSkyBlue)
         ) {
-            // Header
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 16.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .alpha(if (viewModel.isLoading.value) 0.5f else 1f)
             ) {
-                IconButton(onClick = { activity?.finish()  }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.back_arrow),
-                        contentDescription = "Back",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                Text(
-                    text = "Create Event",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-
-            // Input Fields
-            inputField(name, "Event Name")
-            inputField(title, "Title")
-            inputField(description, "Description")
-            inputField(guidelines, "Guidelines")
-            inputField(venue, "Venue")
-
-            // Image Upload
-            ImageUploadScreen(
-                selectedImageUri = selectedPosterUri,
-                placeholder = "Upload Event Poster",
-                onImageSelected = { }
-            )
-
-            // Event Date and End Date Row
-            Row(modifier = Modifier.fillMaxWidth()) {
-                DatePickerCard(
-                    date = eventDate,
-                    placeholder = "Event Date",
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                DatePickerCard(
-                    date = registrationEndDate,
-                    placeholder = "End Date",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            // Event Status Section
-            SectionTitle("Event Status")
-            SwitchCard(
-                checked = comingSoon.value,
-                onCheckedChange = { comingSoon.value = it },
-                label = "Coming Soon"
-            ) {
-                if (comingSoon.value) {
-                    var date = remember { mutableStateOf("") }
-                    Divider(
-                        modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                        color = Color.LightGray
-                    )
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        DatePickerField(date, Modifier.padding(end = 5.dp).size(20.dp))
-                        Text(
-                            text = if (date.value.isEmpty()) "Due Date" else date.value,
-                            fontSize = 16.sp,
-                            color = if (date.value.isEmpty()) Color.Gray else Color.Black
+                // Header
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) {
+                    IconButton(onClick = { activity?.finish() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.back_arrow),
+                            contentDescription = "Back",
+                            modifier = Modifier.size(24.dp)
                         )
                     }
-                }
-            }
-
-            // Registration Section
-            SectionTitle("Registration")
-            SwitchCard(
-                checked = isRegistrationsOpen.value,
-                onCheckedChange = { isRegistrationsOpen.value = it },
-                label = "Registration Open"
-            ) {
-                if (isRegistrationsOpen.value) {
-                    Divider(
-                        modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                        color = Color.LightGray
+                    Text(
+                        text = "Create Event",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
+                }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // First DatePicker (Registration Start Date)
-                        Row(
-                            modifier = Modifier.weight(1f),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            DatePickerField(
-                                registrationStartDate,
-                                Modifier.padding(end = 8.dp).size(20.dp)
-                            )
-                            Text(
-                                text = if (registrationStartDate.value.isEmpty()) "Open Date" else registrationStartDate.value,
-                                fontSize = 16.sp,
-                                color = if (registrationStartDate.value.isEmpty()) Color.Gray else Color.Black,
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-                        }
+                // Input Fields
+                inputField(name, "Event Name")
+                inputField(title, "Title")
+                inputField(description, "Description")
+                inputField(guidelines, "Guidelines")
+                inputField(venue, "Venue")
 
+                // Image Upload
+                ImageUploadScreen(
+                    selectedImageUri = selectedPosterUri,
+                    placeholder = "Upload Event Poster",
+                    onImageSelected = { }
+                )
+
+                // Event Date and End Date Row
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    DatePickerCard(
+                        date = eventDate,
+                        placeholder = "Event Date",
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    DatePickerCard(
+                        date = registrationEndDate,
+                        placeholder = "End Date",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                // Event Status Section
+                SectionTitle("Event Status")
+                SwitchCard(
+                    checked = comingSoon.value,
+                    onCheckedChange = { comingSoon.value = it },
+                    label = "Coming Soon"
+                ) {
+                    if (comingSoon.value) {
+                        var date = remember { mutableStateOf("") }
                         Divider(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(1.dp)
-                                .padding(horizontal = 8.dp),
+                            modifier = Modifier.padding(12.dp).fillMaxWidth(),
                             color = Color.LightGray
                         )
 
-                        // Second DatePicker (Registration End Date)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            DatePickerField(date, Modifier.padding(end = 5.dp).size(20.dp))
+                            Text(
+                                text = if (date.value.isEmpty()) "Due Date" else date.value,
+                                fontSize = 16.sp,
+                                color = if (date.value.isEmpty()) Color.Gray else Color.Black
+                            )
+                        }
+                    }
+                }
+
+                // Registration Section
+                SectionTitle("Registration")
+                SwitchCard(
+                    checked = isRegistrationsOpen.value,
+                    onCheckedChange = { isRegistrationsOpen.value = it },
+                    label = "Registration Open"
+                ) {
+                    if (isRegistrationsOpen.value) {
+                        Divider(
+                            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                            color = Color.LightGray
+                        )
+
                         Row(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            DatePickerField(
-                                registrationEndDate,
-                                Modifier.padding(end = 8.dp).size(20.dp)
+                            // First DatePicker (Registration Start Date)
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                DatePickerField(
+                                    registrationStartDate,
+                                    Modifier.padding(end = 8.dp).size(20.dp)
+                                )
+                                Text(
+                                    text = if (registrationStartDate.value.isEmpty()) "Open Date" else registrationStartDate.value,
+                                    fontSize = 16.sp,
+                                    color = if (registrationStartDate.value.isEmpty()) Color.Gray else Color.Black,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                            }
+
+                            Divider(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(1.dp)
+                                    .padding(horizontal = 8.dp),
+                                color = Color.LightGray
                             )
-                            Text(
-                                text = if (registrationEndDate.value.isEmpty()) "Close Date" else registrationEndDate.value,
-                                fontSize = 16.sp,
-                                color = if (registrationEndDate.value.isEmpty()) Color.Gray else Color.Black
-                            )
+
+                            // Second DatePicker (Registration End Date)
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                DatePickerField(
+                                    registrationEndDate,
+                                    Modifier.padding(end = 8.dp).size(20.dp)
+                                )
+                                Text(
+                                    text = if (registrationEndDate.value.isEmpty()) "Close Date" else registrationEndDate.value,
+                                    fontSize = 16.sp,
+                                    color = if (registrationEndDate.value.isEmpty()) Color.Gray else Color.Black
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            // Payment Section
-            SectionTitle("Payment")
-            SwitchCard(
-                checked = paymentRequired.value,
-                onCheckedChange = { paymentRequired.value = it },
-                label = "Payment Required"
-            ) {
-                if (paymentRequired.value) {
-                    Divider(
-                        modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                        color = Color.LightGray
-                    )
-
-                    TextField(
-                        value = amountText.value,
-                        onValueChange = { input ->
-                            if (input.all { it.isDigit() }) {
-                                amountText.value = input
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 40.dp, max = 120.dp),
-                        placeholder = { Text("Amount") },
-                        maxLines = 1,
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            cursorColor = Color.Black,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedPlaceholderColor = Color.Gray,
-                            unfocusedPlaceholderColor = Color.Gray
+                // Payment Section
+                SectionTitle("Payment")
+                SwitchCard(
+                    checked = paymentRequired.value,
+                    onCheckedChange = { paymentRequired.value = it },
+                    label = "Payment Required"
+                ) {
+                    if (paymentRequired.value) {
+                        Divider(
+                            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                            color = Color.LightGray
                         )
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Submit Button
-            Button(
-                onClick = {
-                    if (isFormValid.value) {
-                        val posterPart = selectedPosterUri.value?.let { uri ->
-                            try {
-                                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                                    val posterRequestBody = inputStream.readBytes()
-                                        .toRequestBody("image/*".toMediaTypeOrNull())
-                                    MultipartBody.Part.createFormData(
-                                        "poster",
-                                        "poster.jpg",
-                                        posterRequestBody
-                                    )
+                        TextField(
+                            value = amountText.value,
+                            onValueChange = { input ->
+                                if (input.all { it.isDigit() }) {
+                                    amountText.value = input
                                 }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                null
-                            }
-                        }
-
-                        viewModel.submitEvent(
-                            title = name.value,
-                            description = description.value,
-                            guidelines = guidelines.value,
-                            venue = venue.value,
-                            registrationStartDate = registrationStartDate.value,
-                            registrationEndDate = registrationEndDate.value,
-                            eventDate = eventDate.value,
-                            status = if (comingSoon.value) "upcoming" else "ongoing",
-                            isRegistrationsOpen = isRegistrationsOpen.value,
-                            paymentRequired = paymentRequired.value,
-                            amount = amountText.value.toIntOrNull() ?: 0,
-                            poster = posterPart,
-                            gallery = null
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 40.dp, max = 120.dp),
+                            placeholder = { Text("Amount") },
+                            maxLines = 1,
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                cursorColor = Color.Black,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedPlaceholderColor = Color.Gray,
+                                unfocusedPlaceholderColor = Color.Gray
+                            )
                         )
-                    } else {
-                        Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT)
-                            .show()
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 17.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primary,
-                    disabledContainerColor = primary.copy(alpha = 0.1f),
-                    contentColor = Color.White,
-                    disabledContentColor = Color.White.copy(alpha = 0.5f)
-                ),
-                enabled = isFormValid.value && !viewModel.isLoading.value
-            ) {
-                Text("Create Event", fontSize = 16.sp)
-            }
-        }
+                }
 
-        // Loading overlay
-        if (viewModel.isLoading.value) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .zIndex(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = primary,
-                    strokeWidth = 4.dp
-                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Submit Button
+                Button(
+                    onClick = {
+                        if (isFormValid.value) {
+                            val posterPart = selectedPosterUri.value?.let { uri ->
+                                try {
+                                    context.contentResolver.openInputStream(uri)
+                                        ?.use { inputStream ->
+                                            val posterRequestBody = inputStream.readBytes()
+                                                .toRequestBody("image/*".toMediaTypeOrNull())
+                                            MultipartBody.Part.createFormData(
+                                                "poster",
+                                                "poster.jpg",
+                                                posterRequestBody
+                                            )
+                                        }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    null
+                                }
+                            }
+
+                            viewModel.submitEvent(
+                                title = name.value,
+                                description = description.value,
+                                guidelines = guidelines.value,
+                                venue = venue.value,
+                                registrationStartDate = registrationStartDate.value,
+                                registrationEndDate = registrationEndDate.value,
+                                eventDate = eventDate.value,
+                                status = if (comingSoon.value) "upcoming" else "ongoing",
+                                isRegistrationsOpen = isRegistrationsOpen.value,
+                                paymentRequired = paymentRequired.value,
+                                amount = amountText.value.toIntOrNull() ?: 0,
+                                poster = posterPart,
+                                gallery = null
+                            )
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Please fill all required fields",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = primary,
+                        disabledContainerColor = primary.copy(alpha = 0.1f),
+                        contentColor = Color.White,
+                        disabledContentColor = Color.White.copy(alpha = 0.5f)
+                    ),
+                    enabled = isFormValid.value && !viewModel.isLoading.value
+                ) {
+                    Text("Create Event", fontSize = 16.sp)
+                }
+            }
+
+            // Loading overlay
+            if (viewModel.isLoading.value) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f))
+                        .zIndex(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = primary,
+                        strokeWidth = 4.dp
+                    )
+                }
             }
         }
     }
