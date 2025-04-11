@@ -56,10 +56,9 @@ import com.example.csiappcompose.viewModels.NetWorkResponse
 import com.example.csiappcompose.viewModels.ProfilePageViewModel
 import com.example.csiappcompose.viewModels.ProfilePageViewModelFactory
 
-
+@Preview
 @Composable
 fun ProfilePage() {
-
     val context = LocalContext.current
     val viewModel: ProfilePageViewModel = viewModel(factory = ProfilePageViewModelFactory(context))
 
@@ -67,233 +66,376 @@ fun ProfilePage() {
     val token = tokenState.value
 
     var profile = viewModel.profilePage.observeAsState()
+    var branch = viewModel.branch.observeAsState()
+    var year = viewModel.year.observeAsState()
+    var domain = viewModel.domain.observeAsState()
+    var dob = viewModel.dob.observeAsState()
+    var github = viewModel.github.observeAsState()
+    var linkedin = viewModel.linkedin.observeAsState()
+    var bio = viewModel.bio.observeAsState()
+    var achievements = viewModel.achievements.observeAsState()
+    var photo = viewModel.photo.observeAsState()
+    val name = viewModel.name.observeAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchToken()
     }
-
-    when (val response = profile.value) {
-        is NetWorkResponse.Error -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Failed to load data: ${response.message}", color = Color.Red)
-            }
-        }
-
-        is NetWorkResponse.Loading -> {
-            ShimmerEffect(
+            val scrollState = rememberScrollState()
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.Gray)
-            )
-        }
+                    .padding(top=20.dp)
+                    .background(Color(0xFFF5F5F5))
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-        is NetWorkResponse.Success -> {
-            val profileSetValue = response.data as profileData
-
-            profileui(
-                name = profileSetValue.full_name,
-                photo = profileSetValue.photo,
-                branch = profileSetValue.branch,
-                year = profileSetValue.year,
-                domain = profileSetValue.domain, // Only if DomainX has a `name` field
-                dob = profileSetValue.dob,
-                linkedin = profileSetValue.linkedin_url,
-                github = profileSetValue.github_url,
-                bio = profileSetValue.bio,
-                achievements = profileSetValue.achievements,
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-                    .height(200.dp)
-            )
-        }
+                Spacer(modifier=Modifier.height(70.dp))
 
 
-
-
-        else -> {
-            Text(text = "Unexpected state", color = Color.Gray)
-        }
-    }
-
-
-}
-@Preview
-@Composable
-fun profileui(
-    name: String = "John Doe",
-    photo: String? = null,
-    branch: String = "Computer Science",
-    year: String = "2nd Year",
-    domain: DomainX?= DomainX(1,"App dev"),
-    dob: String = "01/01/2000",
-    linkedin: String = "https://linkedin.com/in/johndoe",
-    github: String = "https://github.com/johndoe",
-    bio: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    achievements: String? = "1. Achievement 1\n2. Achievement 2\n3. Achievement 3",
-    modifier: Modifier = Modifier
-        .padding(horizontal = 20.dp)
-        .fillMaxWidth()
-        .height(200.dp)
-) {
-    val scrollState = rememberScrollState()
-    val context= LocalContext.current
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top=20.dp)
-            .background(Color(0xFFF5F5F5))
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Spacer(modifier=Modifier.height(70.dp))
-
-
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .background(Color.White, RoundedCornerShape(16.dp))
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box {
-                Card(
+                Column(
                     modifier = Modifier
-                        .size(150.dp),
-                    shape = CircleShape,
+                        .padding(horizontal = 16.dp)
+                        .background(Color.White, RoundedCornerShape(16.dp))
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CompositionLocalProvider(LocalInspectionMode provides false) {
-                        if (photo != null) {
-                            val imgUrl = photo?.let {
-                                if (it.toString().startsWith("http://")) {
-                                    it.toString().replace("http://", "https://")
-                                } else it
-                            } ?: ""
 
-                            Log.d("ROOM_AVATAR", "Final Image URL: $imgUrl")
+                    Box {
+                        Card(
+                            modifier = Modifier
+                                .size(150.dp),
+                            shape = CircleShape,
+                        ) {
+                            when (val response = photo.value) {
+                                is NetWorkResponse.Error -> {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "Failed to load data: ${response.message}",
+                                            color = Color.Red
+                                        )
+                                    }
+                                }
 
-                            ProfileImage(imgUrl.toString()) {
-                              //  selected.value=imgUrl.toString()
+                                is NetWorkResponse.Loading -> {
+                                    ShimmerEffect(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(Color.Gray)
+                                    )
+                                }
+
+                                is NetWorkResponse.Success -> {
+                                    CompositionLocalProvider(LocalInspectionMode provides false) {
+                                        if (response.data.photo != null) {
+                                            val imgUrl = response.data.photo?.let {
+                                                if (it.toString().startsWith("http://")) {
+                                                    it.toString().replace("http://", "https://")
+                                                } else it
+                                            } ?: ""
+
+                                            Log.d("ROOM_AVATAR", "Final Image URL: $imgUrl")
+
+                                            ProfileImage(imgUrl.toString()) {
+                                                //  selected.value=imgUrl.toString()
+                                            }
+
+
+                                            //Log.d("ROOM_AVATAR", "groupListItem: ${groupListItem.room_avatar}")
+                                        } else {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.profile_icon),
+                                                contentDescription = "Profile Image",
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .clip(CircleShape),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        }
+                                    }
+                                }
+                                else ->{
+                                    Text("Unexpected state", color = Color.Gray)
+                                }
                             }
-
-
-                            //Log.d("ROOM_AVATAR", "groupListItem: ${groupListItem.room_avatar}")
-                        } else {
-                            Image(
-                                painter = painterResource(id = R.drawable.profile_icon),
-                                contentDescription = "Profile Image",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
                         }
                     }
-                }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            Text("2nd Year", fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    when (val nameResponse = name.value) {
+                        is NetWorkResponse.Loading -> {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .width(100.dp)
+                                    .height(25.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-            InfoCard(label = "Branch", value = branch)
-            InfoCard(label = "Domain", value = if(domain!=null) domain.name.toString() else  "fill your domain")
-            InfoCard(label = "D.O.B", value = dob)
+                        }
+                        is NetWorkResponse.Success -> {
+                            Text(nameResponse.data.full_name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        }
+                        is NetWorkResponse.Error -> {
+                            Text("Error: ${nameResponse.message}", color = Color.Red)
+                        }
+                        else -> {
+                            Text("Unexpected state", color = Color.Gray)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    when (val yearResponse = year.value) {
+                        is NetWorkResponse.Loading -> {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .width(50.dp)
+                                    .height(25.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                        }
+                        is NetWorkResponse.Success -> {
+                            Text(yearResponse.data.year, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        }
+                        is NetWorkResponse.Error -> {
+                            Text("Error: ${yearResponse.message}", color = Color.Red)
+                        }
+                        else -> {
+                            Text("Unexpected state", color = Color.Gray)
+                        }
+                    }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    when (val branchResponse = branch.value) {
+                        is NetWorkResponse.Loading -> {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                                    .height(35.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                        }
+                        is NetWorkResponse.Success -> {
+                            InfoCard(label = "Branch", value = branchResponse.data.branch)
+                        }
+                        is NetWorkResponse.Error -> {
+                            Text("Error: ${branchResponse.message}", color = Color.Red)
+                        }
+                        else -> {
+                            Text("Unexpected state", color = Color.Gray)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    when (val domainResponse = domain.value) {
+                        is NetWorkResponse.Loading -> {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                                    .height(35.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                        }
+                        is NetWorkResponse.Success -> {
+                            InfoCard(label = "Domain", value = if(domainResponse.data?.domain!=null) domainResponse.data?.domain?.name.toString() else  "fill your domain")
+                        }
+                        is NetWorkResponse.Error -> {
+                            Text("Error: ${domainResponse.message}", color = Color.Red)
+                        }
+                        else -> {
+                            Text("Unexpected state", color = Color.Gray)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    when (val dobResponse = dob.value) {
+                        is NetWorkResponse.Loading -> {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                                    .height(35.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                        }
+                        is NetWorkResponse.Success -> {
+                            InfoCard(label = "D.O.B", value = dobResponse.data.dob)
+                        }
+                        is NetWorkResponse.Error -> {
+                            Text("Error: ${dobResponse.message}", color = Color.Red)
+                        }
+                        else -> {
+                            Text("Unexpected state", color = Color.Gray)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
 
 //            InfoCard(label = "Linkedin URL", value = linkedin)
 //            InfoCard(label = "Git hub URL", value = github)
 
-            Spacer(modifier = Modifier.height(16.dp))
-            if(bio!=null) {
-                SectionHeader("Bio")
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                InfoText(bio)
-            }
+                    when (val bioResponse = bio.value) {
+                        is NetWorkResponse.Loading -> {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                                    .height(35.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                        }
+                        is NetWorkResponse.Success -> {
+                            if(bioResponse.data.bio!=null) {
+                                SectionHeader("Bio")
 
-            Spacer(modifier = Modifier.height(16.dp))
-            if (achievements != null) {
-                if(achievements.isNotEmpty()) {
-                    SectionHeader("Achievements")
+                                InfoText(bioResponse.data.bio)
+                            }
+                        }
+                        is NetWorkResponse.Error -> {
+                            Text("Error: ${bioResponse.message}", color = Color.Red)
+                        }
+                        else -> {
+                            Text("Unexpected state", color = Color.Gray)
+                        }
+                    }
 
-                    InfoText(achievements)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    when (val achievementsResponse = achievements.value) {
+                        is NetWorkResponse.Loading -> {
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                                    .height(35.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray)
+                            )
+                        }
+                        is NetWorkResponse.Success -> {
+                            if (achievementsResponse.data.achievements != null) {
+                                if(achievementsResponse.data.achievements.isNotEmpty()) {
+                                    SectionHeader("Achievements")
+
+                                    InfoText(achievementsResponse.data.achievements)
+                                }
+                            }
+                        }
+                        is NetWorkResponse.Error -> {
+                            Text("Error: ${achievementsResponse.message}", color = Color.Red)
+                        }
+                        else -> {
+                            Text("Unexpected state", color = Color.Gray)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
+                    Row(modifier=Modifier.fillMaxWidth()) {  }
+
+
+                    Row(Modifier.width(100.dp).wrapContentHeight()) {
+
+                        when (val githubResponse = github.value) {
+                            is NetWorkResponse.Loading -> {
+                                ShimmerEffect(modifier = Modifier
+                                    .width(24.dp)
+                                    .height(35.dp)
+                                    .padding(horizontal = 16.dp))
+                            }
+                            is NetWorkResponse.Success -> {
+                                IconButton(onClick = {
+                                    val intent = Intent(context, WebViewActivity::class.java)
+                                    intent.putExtra("url", githubResponse.data.github_url)
+                                    context.startActivity(intent)
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.github_png),
+                                        contentDescription = "GitHub",
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                            }
+                            is NetWorkResponse.Error -> {
+                                Text("Error: ${githubResponse.message}", color = Color.Red)
+                            }
+                            else -> {
+                                Text("Unexpected state", color = Color.Gray)
+                            }
+                        }
+
+
+
+                        when (val linkedinResponse = linkedin.value) {
+                            is NetWorkResponse.Loading -> {
+                                ShimmerEffect(modifier = Modifier
+                                    .width(24.dp)
+                                    .height(35.dp)
+                                    .padding(horizontal = 16.dp))
+                            }
+                            is NetWorkResponse.Success -> {
+                                IconButton(onClick = {
+                                    val intent = Intent(context, WebViewActivity::class.java)
+                                    intent.putExtra("url", linkedinResponse.data.linkedin_url)
+                                    context.startActivity(intent)
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.linkedin_png),
+                                        contentDescription = "LinkedIn",
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                            }
+                            is NetWorkResponse.Error -> {
+                                Text("Error: ${linkedinResponse.message}", color = Color.Red)
+                            }
+                            else -> {
+                                Text("Unexpected state", color = Color.Gray)
+                            }
+                        }
+                    }
+
+
+
+
+
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+
+
+
+                    Button(
+                        onClick = { /* Handle settings */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005EFF))
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Settings", color = Color.White)
+                    }
                 }
+
+
+                Spacer(modifier=Modifier.height(110.dp))
             }
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            Row(modifier=Modifier.fillMaxWidth()) {  }
-
-
-            Row(Modifier.width(100.dp).wrapContentHeight()) {
-
-
-
-                IconButton(onClick = {
-                    val intent = Intent(context, WebViewActivity::class.java)
-                    intent.putExtra("url", github)
-                    context.startActivity(intent)
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.github_png),
-                        contentDescription = "GitHub",
-                        tint = Color.Unspecified
-                    )
-                }
-
-
-
-
-                IconButton(onClick = {
-                    val intent = Intent(context, WebViewActivity::class.java)
-                    intent.putExtra("url", linkedin)
-                    context.startActivity(intent)
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.linkedin_png),
-                        contentDescription = "LinkedIn",
-                        tint = Color.Unspecified
-                    )
-                }
-            }
-
-
-
-
-
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-
-
-
-            Button(
-                onClick = { /* Handle settings */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005EFF))
-            ) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Settings", color = Color.White)
-            }
-        }
-
-
-        Spacer(modifier=Modifier.height(90.dp))
-    }
 }
+
 
 @Composable
 fun InfoCard(label: String, value: String) {

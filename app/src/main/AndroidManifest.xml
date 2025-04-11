@@ -17,9 +17,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CSIAppCompose"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".pages.GroupDetailsActivity"-->
-<!--            android:exported="false" />-->
+        <activity
+            android:name=".pages.CreateTaskActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CSIAppCompose"
+            android:windowSoftInputMode="adjustResize" />
+        <!-- <activity -->
+        <!-- android:name=".pages.GroupDetailsActivity" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".pages.WebViewActivity"
             android:exported="false" />
@@ -66,11 +71,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".pages.HomePage.CreateEventActivity"
-            android:exported="true"
-            android:theme="@style/Theme.CSIAppCompose"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".pages.CreateTaskActivity"
             android:exported="true"
             android:theme="@style/Theme.CSIAppCompose"
             android:windowSoftInputMode="adjustResize" />

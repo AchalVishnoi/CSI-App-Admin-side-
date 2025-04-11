@@ -17,6 +17,7 @@ import com.example.csiappcompose.dataModelsResponse.fillYourDetailsResponse
 import com.example.csiappcompose.dataModelsResponse.oldMessagesResponse
 import com.example.csiappcompose.dataModelsResponse.profileData
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
+import com.example.csiappcompose.dataModelsResponseTask.CreateTask
 import com.example.csiappcompose.dataModelsResponseTask.TaskData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -163,6 +164,21 @@ interface ApiService {
         @Part poster: MultipartBody.Part?,
         @Part gallery: List<MultipartBody.Part>?
     ): Response<createEvent>
+
+    @Multipart
+    @POST("api/task/create/")
+    suspend fun createTask(
+        @Header("Authorization") token: String,
+        @Part("title") title: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("start_date") registrationStartDate: RequestBody,
+        @Part("end_date") registrationEndDate: RequestBody,
+        @Part("status") status: RequestBody,
+        @Part("current_progress") currentProgress: RequestBody,
+        @Part("attachment") attachment: RequestBody,
+        @Part("info_url") infoUrl: RequestBody,
+        @Body groups: RequestBody // Important: send JSON body here!
+    ): Response<CreateTask>
 
     @GET("api/attendance")
     suspend fun getAttendance(): List<AttendanceDay>

@@ -101,8 +101,8 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
     val navItemListitems = listOf(
         NavItem("Home", R.drawable.home_icon),
         NavItem("Task", R.drawable.task_icon),
-        NavItem("Profile", R.drawable.profile_icon),
         NavItem("Chat", R.drawable.chat_icon),
+        NavItem("Profile", R.drawable.profile_icon),
     )
 
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
@@ -113,8 +113,8 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
                 "home"->0
                 "home_page" -> 0
                 "task" -> 1
-                "profile" -> 2
-                "chat_room" -> 3
+                "profile" -> 3
+                "chat_room" -> 2
                 else -> selectedIndex
             }
         }
@@ -169,8 +169,8 @@ fun Main(modifier: Modifier = Modifier,   chatViewModel: ChatViewModel) {
                                 val route = when (index) {
                                     0 -> "home_page"
                                     1 -> "task"
-                                    2 -> "profile"
-                                    3 -> "chat_room"
+                                    3 -> "profile"
+                                    2 -> "chat_room"
                                     else -> "home_page"
                                 }
                                 navController.navigate(route) {
@@ -352,7 +352,7 @@ fun TopBar() {
 
         // Right Profile Icon
         Icon(
-            painter = painterResource(id = R.drawable.profile_icon), // Replace with actual icon resource
+            painter = painterResource(id = R.drawable.bell_icon), // Replace with actual icon resource
             contentDescription = "Profile Icon",
             tint = Color.White,
             modifier = Modifier.size(30.dp)

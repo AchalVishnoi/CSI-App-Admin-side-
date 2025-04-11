@@ -242,7 +242,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
                     if (response.isSuccessful) {
                         successMessage.value = true
-                            Toast.makeText(context,"Event created successfully!".toString(), Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,"Event created successfully!".toString(), Toast.LENGTH_LONG).show()
 
                         Log.i("EVENT", "submitEvent : Event created successfully")
                     } else {

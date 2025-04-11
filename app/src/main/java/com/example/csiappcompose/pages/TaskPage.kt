@@ -1,3 +1,4 @@
+
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -109,7 +110,7 @@ fun taskUi(
     ),
 
     modifier: Modifier
-   ){
+){
     val context = LocalContext.current
 
     Box(
@@ -129,7 +130,7 @@ fun taskUi(
                             }
                             ctx.startActivity(intent) // ✅ Starting activity with context
                         }
-                        },
+                    },
                     modifier = Modifier.padding(top = 70.dp )
                         .padding(16.dp)
                         .fillMaxWidth(),
@@ -286,8 +287,8 @@ fun TaskItem1(task: Current) {
             Text(text = task.title, fontSize = 20.sp,
                 color = Color.Red,
                 fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                  overflow = TextOverflow.Ellipsis)
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(38.dp))
             LinearProgressIndicator(
                 progress = task.current_progress / 100f, // Convert percentage to float value (0-1)
@@ -342,7 +343,7 @@ fun TaskItem2(task: Pending) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = task.start_date, fontSize = 12.sp, color = Color.Black)
             Text(text = task.title, fontSize = 20.sp,color = Color.Red, fontWeight = FontWeight.Bold
-                   , maxLines = 1,
+                , maxLines = 1,
                 overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(38.dp))
             LinearProgressIndicator(
