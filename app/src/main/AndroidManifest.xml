@@ -11,9 +11,9 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:forceDarkAllowed="false"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/csi_logo_without_background"
+        android:icon="@mipmap/ic_launcher"
         android:label="CSI Admin App"
-        android:roundIcon="@drawable/csi_logo_without_background"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.CSIAppCompose"
         tools:targetApi="31">
