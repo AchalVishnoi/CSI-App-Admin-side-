@@ -4,8 +4,8 @@ package com.example.csiappcompose.pages
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,56 +34,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
-
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
-import com.example.csiappcompose.dataModelsResponse.Domain
-import com.example.csiappcompose.pages.Chat.ProfileImage
-import com.example.csiappcompose.viewModels.AuthViewModel
-
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-
-import androidx.compose.foundation.verticalScroll
-
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.VolumeUp
-import androidx.compose.material3.Button
-
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.livedata.observeAsState
-
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -94,59 +49,80 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.csiappcompose.R
+import com.example.csiappcompose.dataModelsResponse.DomainX
+import com.example.csiappcompose.dataModelsResponse.profileData
 import com.example.csiappcompose.pages.Chat.ProfileImage
-import com.example.csiappcompose.viewModels.HomePageViewModel
-import com.example.csiappcompose.viewModels.HomePageViewModelFactory
 import com.example.csiappcompose.viewModels.NetWorkResponse
+import com.example.csiappcompose.viewModels.ProfilePageViewModel
+import com.example.csiappcompose.viewModels.ProfilePageViewModelFactory
 
 
 @Composable
 fun ProfilePage() {
 
-
-    val navController = rememberNavController()
-    val authViewModel: AuthViewModel = viewModel()
     val context = LocalContext.current
-    val logoutState = authViewModel.logoutState.collectAsState()
+    val viewModel: ProfilePageViewModel = viewModel(factory = ProfilePageViewModelFactory(context))
 
+    val tokenState = viewModel.token.collectAsState(initial = "")
+    val token = tokenState.value
 
+    var profile = viewModel.profilePage.observeAsState()
 
-    LaunchedEffect(logoutState) {
-        if (logoutState.value) {
-            navController.navigate("login") {
-                popUpTo("home") { inclusive = true }
+    LaunchedEffect(Unit) {
+        viewModel.fetchToken()
+    }
+
+    when (val response = profile.value) {
+        is NetWorkResponse.Error -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Failed to load data: ${response.message}", color = Color.Red)
             }
         }
+
+        is NetWorkResponse.Loading -> {
+            ShimmerEffect(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.Gray)
+            )
+        }
+
+        is NetWorkResponse.Success -> {
+            val profileSetValue = response.data as profileData
+
+            profileui(
+                name = profileSetValue.full_name,
+                photo = profileSetValue.photo,
+                branch = profileSetValue.branch,
+                year = profileSetValue.year,
+                domain = profileSetValue.domain, // Only if DomainX has a `name` field
+                dob = profileSetValue.dob,
+                linkedin = profileSetValue.linkedin_url,
+                github = profileSetValue.github_url,
+                bio = profileSetValue.bio,
+                achievements = profileSetValue.achievements,
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
+        }
+
+
+
+
+        else -> {
+            Text(text = "Unexpected state", color = Color.Gray)
+        }
     }
 
-     Column (
-        modifier = Modifier.fillMaxSize()
-            .background(Color(color = 0xFF3BA90B)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Text("Welcome!")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
-            context.let { ctx -> // ✅ Ensuring context isn't null
-                            val intent = Intent(ctx, FillYourDetail()::class.java).apply {
-                            }
-                          ctx.startActivity(intent)
-                        }
-        }
-        )
-            {
-            Text("Logout")
-        }
-    }
 
 }
-
-
-
-
 @Preview
 @Composable
 fun profileui(
@@ -154,7 +130,7 @@ fun profileui(
     photo: String? = null,
     branch: String = "Computer Science",
     year: String = "2nd Year",
-    domain: Domain?= Domain(1,"App dev"),
+    domain: DomainX?= DomainX(1,"App dev"),
     dob: String = "01/01/2000",
     linkedin: String = "https://linkedin.com/in/johndoe",
     github: String = "https://github.com/johndoe",
@@ -204,7 +180,7 @@ fun profileui(
                             Log.d("ROOM_AVATAR", "Final Image URL: $imgUrl")
 
                             ProfileImage(imgUrl.toString()) {
-                                //  selected.value=imgUrl.toString()
+                              //  selected.value=imgUrl.toString()
                             }
 
 
@@ -261,7 +237,7 @@ fun profileui(
             Row(Modifier.width(100.dp).wrapContentHeight()) {
 
 
-/*
+
                 IconButton(onClick = {
                     val intent = Intent(context, WebViewActivity::class.java)
                     intent.putExtra("url", github)
@@ -288,8 +264,6 @@ fun profileui(
                         tint = Color.Unspecified
                     )
                 }
-                */
-
             }
 
 
@@ -372,5 +346,3 @@ fun InfoText(text: String) {
         )
     }
 }
-
-

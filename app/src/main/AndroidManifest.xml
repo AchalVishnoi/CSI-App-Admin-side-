@@ -17,7 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CSIAppCompose"
         tools:targetApi="31">
-
+<!--        <activity-->
+<!--            android:name=".pages.GroupDetailsActivity"-->
+<!--            android:exported="false" />-->
+        <activity
+            android:name=".pages.WebViewActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"
@@ -25,17 +30,15 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
-
         <activity
             android:name=".pages.FillYourDetail"
             android:exported="false"
             android:theme="@style/Theme.CSIAppCompose"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".pages.CreateAnnouncement"
             android:exported="false" />
@@ -43,20 +46,18 @@
             android:name=".pages.ForgetScreen"
             android:exported="false"
             android:theme="@style/Theme.CSIAppCompose"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".pages.LoginScreen"
             android:exported="false"
             android:theme="@style/Theme.CSIAppCompose"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:label="CSI Admin App"
             android:theme="@style/Theme.CSIAppCompose"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".TaskDetailsActivity"
             android:exported="true"
@@ -65,6 +66,11 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".pages.HomePage.CreateEventActivity"
+            android:exported="true"
+            android:theme="@style/Theme.CSIAppCompose"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".pages.CreateTaskActivity"
             android:exported="true"
             android:theme="@style/Theme.CSIAppCompose"
             android:windowSoftInputMode="adjustResize" />

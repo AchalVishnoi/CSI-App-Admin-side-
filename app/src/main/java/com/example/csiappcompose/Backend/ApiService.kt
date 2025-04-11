@@ -15,7 +15,9 @@ import com.example.csiappcompose.dataModelsResponse.announcmentDisplay
 import com.example.csiappcompose.dataModelsResponse.createEvent
 import com.example.csiappcompose.dataModelsResponse.fillYourDetailsResponse
 import com.example.csiappcompose.dataModelsResponse.oldMessagesResponse
+import com.example.csiappcompose.dataModelsResponse.profileData
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
+import com.example.csiappcompose.dataModelsResponseTask.TaskData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -113,6 +115,15 @@ interface ApiService {
         @Header("Authorization") token: String
     ):Response<List<EventItem>>
 
+    @GET("/api/user/profile/detail/")
+    suspend fun profile(
+        @Header("Authorization") token: String
+    ): Response<profileData>
+
+    @GET("/api/task/my-tasks/")
+    suspend fun task(
+        @Header("Authorization") token: String
+    ): Response<TaskData>
 
 
     @Multipart

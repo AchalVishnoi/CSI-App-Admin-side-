@@ -14,6 +14,8 @@ import com.example.csiappcompose.DataStoreManager
 import com.example.csiappcompose.dataModelsResponse.EventItem
 import com.example.csiappcompose.dataModelsResponse.HomePageStats
 import com.example.csiappcompose.dataModelsResponse.announcmentDisplay
+import com.example.csiappcompose.dataModelsResponse.profileData
+import com.example.csiappcompose.dataModelsResponseTask.TaskData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -34,9 +36,6 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
     private val _token= MutableStateFlow<String?>(null)
     val token : StateFlow<String?> = _token
-
-//    private val _groupList= MutableStateFlow<List<GroupListItem>>(emptyList())
-//    val groupList : StateFlow<List<GroupListItem>> = _groupList
 
     private val _homeStats= MutableLiveData< NetWorkResponse<HomePageStats>>()
     val homeStats: LiveData< NetWorkResponse<HomePageStats>> = _homeStats
@@ -78,7 +77,6 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
         }
     }
-
 
 
 
@@ -318,7 +316,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                         Toast.makeText(context, profileSuccessMessage.value, Toast.LENGTH_LONG).show()
                         Log.i("PROFILE", "submitProfileDetails: Profile updated")
 
-                        onSuccess() // ✅ success callback triggered
+                        onSuccess()
                     } else {
                         val errorBody = response.errorBody()?.string()
                         profileErrorMessage.value = errorBody ?: "Failed to submit profile"

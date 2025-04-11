@@ -194,7 +194,7 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
                     is NetWorkResponse.Success -> {
 
                         val response = response.data
-                        if(response.isNotEmpty()){
+
                             Column(modifier = Modifier.fillMaxWidth().background(color = PrimaryBackgroundColor)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -233,11 +233,20 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
                                         is NetWorkResponse.Success -> {
                                             val homePageStatsValue = response.data
                                             if(homePageStatsValue.year!="2nd"){
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.add_icon),
-                                                    contentDescription = "add announcement",
-                                                    modifier = Modifier.padding(end = 20.dp).size(25.dp)
-                                                                             )
+
+
+                                                IconButton(
+                                                    onClick = {}
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.add_icon),
+                                                        contentDescription = "add announcement",
+                                                        modifier = Modifier.padding(end = 20.dp).size(25.dp)
+                                                    )
+                                                }
+
+
+
                                                 }
 
                                         }
@@ -257,6 +266,8 @@ fun HomePage(modifier: Modifier = Modifier,selected: MutableState<String?>) {
 
 
                                 }
+
+                                if(response.isNotEmpty()){
 
                                 annuncements(announcmentsList=response)
 
@@ -569,7 +580,7 @@ fun annuncements(modifier: Modifier = Modifier
    Card(modifier = modifier.clip(RoundedCornerShape(16.dp)),
 
 
-    shape = RoundedCornerShape(16.dp), // Add rounded corners
+    shape = RoundedCornerShape(16.dp),
 
  ) {
 
