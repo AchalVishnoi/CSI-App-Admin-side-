@@ -64,6 +64,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
                 if (!savedToken.isNullOrEmpty()) {
                     getHomeState(savedToken)
                     getAnnouncements(savedToken)
+                    getEvents(savedToken)
 
                 }
                 else{
