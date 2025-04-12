@@ -14,6 +14,7 @@ import com.example.csiappcompose.WebSocketManager
 import com.example.csiappcompose.dataModelsResponse.Sender
 import com.example.csiappcompose.dataModelsResponse.SenderX
 import com.example.csiappcompose.dataModelsResponse.SenderXX
+import com.example.csiappcompose.dataModelsResponse.chatMessages
 import com.example.csiappcompose.dataModelsResponse.oldChatMessage
 import com.example.csiappcompose.dataModelsResponse.parent_message
 import com.example.csiappcompose.dataModelsResponse.searchMemberItem
@@ -53,92 +54,92 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
     private val _messages = MutableStateFlow<NetWorkResponse<List<oldChatMessage>>>(NetWorkResponse.Loading)
     val messages = _messages.asStateFlow()
 
+    private val _messageQueue = MutableStateFlow<List<oldChatMessage>>(emptyList())
+    val messageQueue: StateFlow<List<oldChatMessage>> = _messageQueue.asStateFlow()
+
+
 
     init {
         webSocketManager.connect()
         viewModelScope.launch {
             webSocketManager.messages.collect { newMessages ->
+                newMessages.forEach { newMsg ->
+                    val convertedMessage = convertWebSocketMessage(newMsg)
 
 
-                val convertedMessages = newMessages.map { msg ->
-                    Log.d("WebSocket Processing", "Processing message ID: ${msg.id} with reactions: ${msg.reactions}")
-                    oldChatMessage(
-                        id = msg.id,
-                        content = msg.message,
-                        created_at = msg.created_at,
-                        message_type = msg.message_type,
-                        sender = SenderX(
-                            id = msg.sender.id,
-                            first_name = msg.sender.name,
-                            photo = msg.sender.photo,
-                            role = msg.sender.role,
-                            last_name = null,
-                            year = null
-                        ),
-                        attachment = msg.attachment,
-                        is_deleted = false,
-                        is_edited = false,
-                        mentions = emptyList(),
-                        parent_message = msg.parent_message,
-                        reactions = msg.reactions,
-                        sendingStatus = "",
-                        updated_at = msg.created_at,
-                        room = roomId,
-                        is_self = msg.is_self,
-                        status = null,
-                        new_content = msg.new_content,
-                        action = msg.action,
-                        is_typing = msg.is_typing
-                    )
-                }
-
-              /* if(convertedMessages.size>0) {
-
-                   _messageToReply.value = convertedMessages.get(0)
-                   Log.i("CHAT SCREEN", "new message= ${_messageToReply.value}")
-               }
-               */
-
-                _messages.update { currentMessages ->
-                    val filteredMessages = if (currentMessages is NetWorkResponse.Success) {
-                        currentMessages.data.filterNot { it.is_self && it.sendingStatus == "sending" }.toMutableList()
-                    } else {
-                        mutableListOf()
-                    }
-
-                    // Create a new list with updated reactions
-                    val updatedMessages = filteredMessages.map { oldMsg ->
-                        val newMsg = convertedMessages.find { it.id == oldMsg.id }
-                        if (newMsg != null) {
-                            when (newMsg.action) {
-                                "edited" -> oldMsg.copy(content = newMsg.new_content.toString())
-                                "reacted" -> oldMsg.copy(reactions = newMsg.reactions)
-                                else -> oldMsg
+                    if (newMsg.is_self) {
+                        _messageQueue.update { currentQueue ->
+                            if (currentQueue.isNotEmpty()) {
+                                currentQueue.dropLast(1)
+                            } else {
+                                currentQueue
                             }
-                        } else {
-                            oldMsg
-                        }
-                    }.toMutableList()
-
-                    // Append new messages that are not already in the list
-                    convertedMessages.forEach { newMsg ->
-                        if (updatedMessages.none { it.id == newMsg.id }) {
-                            updatedMessages.add(newMsg)
                         }
                     }
 
 
-                  NetWorkResponse.Success(updatedMessages.toList())
+                    _messages.update { currentMessages ->
+                        updateMessages(currentMessages, convertedMessage)
+                    }
                 }
-
-
-
-
-
             }
         }
     }
 
+
+
+    private fun convertWebSocketMessage(msg: chatMessages): oldChatMessage {
+        return oldChatMessage(
+            id = msg.id,
+            content = msg.message,
+            created_at = msg.created_at,
+            message_type = msg.message_type,
+            sender = SenderX(
+                id = msg.sender.id,
+                first_name = msg.sender.name,
+                photo = msg.sender.photo,
+                role = msg.sender.role,
+                last_name = null,
+                year = null
+            ),
+            attachment = msg.attachment,
+            is_deleted = false,
+            is_edited = false,
+            mentions = emptyList(),
+            parent_message = msg.parent_message,
+            reactions = msg.reactions,
+            sendingStatus = "",
+            updated_at = msg.created_at,
+            room = roomId,
+            is_self = msg.is_self,
+            status = null,
+            new_content = msg.new_content,
+            action = msg.action,
+            is_typing = msg.is_typing
+        )
+    }
+
+    private fun updateMessages(
+        current: NetWorkResponse<List<oldChatMessage>>,
+        newMessage: oldChatMessage
+    ): NetWorkResponse<List<oldChatMessage>> {
+        return when (current) {
+            is NetWorkResponse.Success -> {
+
+                val updated = current.data.filterNot { it.id == newMessage.id } + newMessage
+                NetWorkResponse.Success(updated)
+            }
+            else -> NetWorkResponse.Success(listOf(newMessage))
+        }
+    }
+
+
+
+
+    private fun similarMessages(serverMsg: oldChatMessage, queueMsg: oldChatMessage): Boolean {
+
+        return serverMsg.content == queueMsg.content
+    }
 
 
 
@@ -230,15 +231,7 @@ class ChatRoomViewModel(private val roomId: Int, private val token: String,priva
         )
 
 
-        _messages.update { currentMessages ->
-            when (currentMessages) {
-                is NetWorkResponse.Success -> {
-                    val updatedMessages = currentMessages.data + tempMessage
-                    NetWorkResponse.Success(updatedMessages)
-                }
-                else -> NetWorkResponse.Success(listOf(tempMessage)) // First message case
-            }
-        }
+        _messageQueue.update { currentQueue -> currentQueue+tempMessage}
 
 
 

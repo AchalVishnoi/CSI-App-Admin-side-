@@ -61,8 +61,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -131,6 +133,8 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
         emptyList()
     }
 
+    val sendingMsg by viewModel.messageQueue.collectAsState()
+
     var unreadMessageId: Int?=null
 
 
@@ -190,6 +194,7 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
                     height = androidx.constraintlayout.compose.Dimension.fillToConstraints
                 },
                 messages = messages.asReversed(),
+                queueMessages = sendingMsg,
                 isMessageSelected = isMessageSelected,
                 unreadCount =unreadCount,
                 unreadMessageId = unreadMessageId,
@@ -321,28 +326,51 @@ fun ChatRoomScreen(roomId: Int, token: String, RoomName: String, profilePic: Str
 fun RoomMessageList(
     modifier: Modifier,
     messages: List<oldChatMessage>,
+    queueMessages: List<oldChatMessage>,
     isMessageSelected: MutableState<Boolean>,
     viewModel: ChatRoomViewModel,
     unreadCount: MutableState<Int>,
     unreadMessageId: Int?,
     onReply: (oldChatMessage) -> Unit,
     reactMessage: (String, Int) -> Unit,
-
-    ) {
+) {
     val isFetching = viewModel.isFetching.collectAsState().value
     val lazyListState = rememberLazyListState()
+
+    val totalMessageCount = messages.size + queueMessages.size
+    var previousMessageCount by remember { mutableIntStateOf(totalMessageCount) }
+
+
+    val shouldAutoScroll by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex < 3 ||
+                    lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == lazyListState.layoutInfo.totalItemsCount - 1
+        }
+    }
 
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
         state = lazyListState
     ) {
-        itemsIndexed(messages, key = { _, msg -> msg.localId }) { index, currentMessage ->
+        // Queued messages (sending)
+        items(
+            items = queueMessages,
+            key = { "queue_${it.content.hashCode()}_${it.created_at}" }
+        ) { message ->
+            RoomMessageRow(message,isMessageSelected,reactMessage,true,onReply
+            )
+        }
 
+        itemsIndexed(
+            items = messages,
+            key = { _, msg -> "server_${msg.id ?: msg.hashCode()}" }
+        ) { index, currentMessage ->
             val showProfile = index == messages.lastIndex ||
                     messages.getOrNull(index + 1)?.sender?.id != currentMessage.sender.id
 
-            RoomMessageRow(currentMessage, isMessageSelected, reactMessage, showProfile, onReply)
+            RoomMessageRow(currentMessage,isMessageSelected, reactMessage,showProfile,onReply
+            )
         }
 
         if (isFetching) {
@@ -357,6 +385,17 @@ fun RoomMessageList(
         }
     }
 
+    LaunchedEffect(totalMessageCount) {
+        if (totalMessageCount > previousMessageCount && shouldAutoScroll) {
+            delay(50)
+            if (totalMessageCount > 0) {
+                lazyListState.animateScrollToItem(0)
+            }
+        }
+        previousMessageCount = totalMessageCount
+    }
+
+
     LaunchedEffect(lazyListState) {
         if (!isFetching) {
             snapshotFlow { lazyListState.firstVisibleItemIndex }
@@ -367,19 +406,6 @@ fun RoomMessageList(
                 }
         }
     }
-
-
-    val previousMessageCount = remember { mutableStateOf(messages.size) }
-
-    LaunchedEffect(messages.size) {
-        if (messages.size > previousMessageCount.value) {
-            lazyListState.scrollToItem(0)
-        }
-        previousMessageCount.value = messages.size
-    }
-
-    
-
 }
 
 

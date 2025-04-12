@@ -130,7 +130,7 @@ fun profileui(
     photo: String? = null,
     branch: String = "Computer Science",
     year: String = "2nd Year",
-    domain: DomainX?= DomainX(1,"App dev"),
+    domain: String?="APP_DEV",
     dob: String = "01/01/2000",
     linkedin: String = "https://linkedin.com/in/johndoe",
     github: String = "https://github.com/johndoe",
@@ -205,7 +205,7 @@ fun profileui(
 
             Spacer(modifier = Modifier.height(16.dp))
             InfoCard(label = "Branch", value = branch)
-            InfoCard(label = "Domain", value = if(domain!=null) domain.name.toString() else  "fill your domain")
+            InfoCard(label = "Domain", value = if(domain!=null) domain else  "fill your domain")
             InfoCard(label = "D.O.B", value = dob)
 
             Spacer(modifier = Modifier.height(8.dp))
