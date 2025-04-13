@@ -246,7 +246,7 @@ fun ProfilePage() {
                             )
                         }
                         is NetWorkResponse.Success -> {
-                            InfoCard(label = "Domain", value = if(domainResponse.data?.domain!=null) domainResponse.data?.domain?.name.toString() else  "fill your domain")
+                            InfoCard(label = "Domain", value = if(domainResponse.data?.domain!=null) domainResponse.data?.domain.toString() else  "fill your domain")
                         }
                         is NetWorkResponse.Error -> {
                             Text("Error: ${domainResponse.message}", color = Color.Red)

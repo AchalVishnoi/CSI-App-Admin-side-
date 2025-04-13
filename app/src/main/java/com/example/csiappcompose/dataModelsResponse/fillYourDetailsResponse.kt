@@ -5,7 +5,7 @@ data class fillYourDetailsResponse(
     val bio: String,
     val branch: String,
     val dob: String,
-    val domain: Domain,
+    val domain: String,
     val full_name: String,
     val github_url: String,
     val hosteller: Boolean,

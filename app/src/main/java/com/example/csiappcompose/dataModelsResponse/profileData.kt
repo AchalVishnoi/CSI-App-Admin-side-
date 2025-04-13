@@ -5,7 +5,7 @@ data class profileData(
     val bio: String,
     val branch: String,
     val dob: String,
-    val domain: DomainX,
+    val domain: String,
     val full_name: String,
     val github_url: String,
     val linkedin_url: String,

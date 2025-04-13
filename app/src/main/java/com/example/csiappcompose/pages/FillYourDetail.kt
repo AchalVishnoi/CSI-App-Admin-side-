@@ -63,20 +63,20 @@ fun ProfileFormScreen() {
     val context = LocalContext.current
     val viewModel: HomePageViewModel = viewModel(factory = HomePageViewModelFactory(context))
 
-    val selectedDomains = remember { mutableStateOf("App Dev") }
     val selectedBranches = remember { mutableStateOf("CSE") }
     val selectedGender = remember { mutableStateOf("MALE") }
 
+    val selectedDomains = remember { mutableStateOf("") }
     val name = remember { mutableStateOf("") }
     val studentNo = remember { mutableStateOf("") }
     val dob = remember { mutableStateOf("") }
     val linkedin = remember { mutableStateOf("") }
     val github = remember { mutableStateOf("") }
     val bio = remember { mutableStateOf("") }
-    var selectedImageUri = remember { mutableStateOf<Uri?>(null) }
-    var hosteller = remember { mutableStateOf(true) }
+    val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
+    val hosteller = remember { mutableStateOf(true) }
 
-    val domainOptions = listOf( "Backend", "Frontend","App Dev", "ML", "UI/UX", "Full Stack")
+    val domainOptions = listOf( "BACKEND", "FRONTEND","APP_DEV", "ML", "UI/UX_DEV", "FULL_STACK")
     val branchOptions = listOf("CSE", "CSE-AIDS", "CSE-AI/ML", "CS", "CST", "CS-HINDI", "IT", "ECE", "EN", "ME", "CIVIL")
     val genderOptions = listOf("MALE", "FEMALE", "OTHERS")
 
@@ -193,7 +193,7 @@ fun ProfileFormScreen() {
 
                         viewModel.submitProfileDetails(
                             branch = selectedBranches.value,
-                            domain = domainOptions.indexOf(selectedDomains.value),
+                            domain = selectedDomains.value,
                             dob = dob.value,
                             linkedinUrl = linkedin.value,
                             bio = bio.value,

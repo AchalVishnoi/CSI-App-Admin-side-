@@ -14,8 +14,6 @@ import com.example.csiappcompose.DataStoreManager
 import com.example.csiappcompose.dataModelsResponse.EventItem
 import com.example.csiappcompose.dataModelsResponse.HomePageStats
 import com.example.csiappcompose.dataModelsResponse.announcmentDisplay
-import com.example.csiappcompose.dataModelsResponse.profileData
-import com.example.csiappcompose.dataModelsResponseTask.TaskData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,7 +24,6 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -276,7 +273,7 @@ class HomePageViewModel(private val context: Context) : ViewModel() {
 
     fun submitProfileDetails(
         branch: String,
-        domain: Int,
+        domain: String,
         dob: String,
         linkedinUrl: String,
         bio: String,
