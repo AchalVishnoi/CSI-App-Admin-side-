@@ -58,6 +58,9 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
+            android:supportsPictureInPicture="true"
+            android:configChanges=
+                "screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:label="CSI Admin App"
             android:theme="@style/Theme.CSIAppCompose"

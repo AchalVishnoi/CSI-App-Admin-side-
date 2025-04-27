@@ -1,7 +1,6 @@
 package com.example.csiappcompose
 
-import HomePage
-import TaskPage
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -12,41 +11,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-
-import coil.util.DebugLogger
-import com.example.csiappcompose.pages.LoginPage
-import com.example.csiappcompose.pages.SplashScreen
 import com.example.csiappcompose.ui.theme.CSIAppComposeTheme
-
-import com.example.csiappcompose.viewModels.AuthViewModel
 import com.example.csiappcompose.viewModels.ChatViewModel
 import coil.ImageLoader
-import com.example.csiappcompose.pages.Chat.AiChat
-import com.example.csiappcompose.pages.Chat.ChatRoomScreen
-import com.example.csiappcompose.pages.Chat.addedGroups
-import com.example.csiappcompose.pages.ChatPage
-import com.example.csiappcompose.pages.ProfilePage
 import com.example.csiappcompose.viewModels.AiChatViewModel
 import com.google.firebase.messaging.FirebaseMessaging
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.google.firebase.FirebaseApp
-
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PictureInPictureParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +31,13 @@ import androidx.compose.material3.lightColorScheme
 
 
 class MainActivity : ComponentActivity() {
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        val pictureInPictureParams = PictureInPictureParams.Builder().build()
+        enterPictureInPictureMode(pictureInPictureParams)
+    }
+
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
